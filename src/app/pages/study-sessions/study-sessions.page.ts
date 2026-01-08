@@ -2,14 +2,28 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonButtons, IonContent, IonHeader, IonMenuButton, IonTitle, IonToolbar,
-  IonItem, IonLabel, IonList, IonSpinner, IonNote, IonButton,
-  IonInput, IonSelect, IonSelectOption, IonDatetime, IonTextarea
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonMenuButton,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonSpinner,
+  IonNote,
+  IonButton,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonDatetime,
+  IonTextarea,
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
 
 import { Course } from 'src/app/models/course.model';
-import { StudySession } from 'src/app/models/study-session.model';
+import { StudySession, StudySessionDTO } from 'src/app/models/study-session.model';
 import { CoursesService } from 'src/app/services/courses/courses.service';
 import { StudySessionsService } from 'src/app/services/studySessions/study-sessions.services';
 
@@ -18,10 +32,25 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
   templateUrl: './study-sessions.page.html',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonMenuButton,
-    IonContent, IonItem, IonLabel, IonList, IonSpinner, IonNote,
-    IonButton, IonInput, IonSelect, IonSelectOption, IonDatetime, IonTextarea,
+    CommonModule,
+    FormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonMenuButton,
+    IonContent,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonSpinner,
+    IonNote,
+    IonButton,
+    IonInput,
+    IonSelect,
+    IonSelectOption,
+    IonDatetime,
+    IonTextarea,
   ],
 })
 export class StudySessionsPage implements OnInit, OnDestroy {
@@ -35,7 +64,7 @@ export class StudySessionsPage implements OnInit, OnDestroy {
 
   form: {
     courseId: string;
-    startedAtIso: string;          // ion-datetime radi sa ISO stringom
+    startedAtIso: string; // ion-datetime radi sa ISO stringom
     durationMinutes: number | null;
     notes: string;
   } = {
@@ -63,7 +92,8 @@ export class StudySessionsPage implements OnInit, OnDestroy {
   }
 
   loadCourses() {
-    this.coursesService.getAll()
+    this.coursesService
+      .getAll()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => (this.courses = data),
@@ -75,7 +105,8 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     this.loading = true;
     this.uiError = null;
 
-    this.studySessionsService.getAll()
+    this.studySessionsService
+      .getAll()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
@@ -109,29 +140,29 @@ export class StudySessionsPage implements OnInit, OnDestroy {
       return;
     }
 
-
     this.saving = true;
 
-    this.studySessionsService.create({
-      courseId: this.form.courseId,
-      startedAt,
-      durationMinutes: this.form.durationMinutes,
-      notes: this.form.notes.trim() || undefined,
-
-    }).subscribe({
-      next: (created) => {
-        this.sessions = [created, ...this.sessions];
-        this.saving = false;
-        // reset minimalno
-        this.form.durationMinutes = null;
-        this.form.notes = '';
-      },
-      error: (e) => {
-        console.error(e);
-        this.uiError = 'Create failed.';
-        this.saving = false;
-      },
-    });
+    this.studySessionsService
+      .create({
+        courseId: this.form.courseId,
+        startedAt,
+        durationMinutes: this.form.durationMinutes,
+        notes: this.form.notes.trim() || undefined,
+      })
+      .subscribe({
+        next: (created) => {
+          this.sessions = [created, ...this.sessions];
+          this.saving = false;
+          // reset minimalno
+          this.form.durationMinutes = null;
+          this.form.notes = '';
+        },
+        error: (e) => {
+          console.error(e);
+          this.uiError = 'Create failed.';
+          this.saving = false;
+        },
+      });
   }
 
   deleteSession(id: string) {
@@ -140,7 +171,7 @@ export class StudySessionsPage implements OnInit, OnDestroy {
 
     this.studySessionsService.remove(id).subscribe({
       next: () => {
-        this.sessions = this.sessions.filter(s => s.id !== id);
+        this.sessions = this.sessions.filter((s) => s.id !== id);
         this.deletingId = null;
       },
       error: (e) => {
@@ -152,13 +183,76 @@ export class StudySessionsPage implements OnInit, OnDestroy {
   }
 
   courseTitleById(courseId: string): string {
-    return this.courses.find(c => c.id === courseId)?.title ?? courseId;
+    return this.courses.find((c) => c.id === courseId)?.title ?? courseId;
   }
 
-formatDateTime(ms: number): string {
-  return new Date(ms).toLocaleString();
-}
+  formatDateTime(ms: number): string {
+    return new Date(ms).toLocaleString();
+  }
+  editingId: string | null = null;
+  savingId: string | null = null;
 
-  trackByCourseId(_: number, c: Course) { return c.id; }
-  trackBySessionId(_: number, s: StudySession) { return s.id; }
+  editForm: { durationMinutes: number | null; notes: string } = {
+    durationMinutes: null,
+    notes: '',
+  };
+
+  trackByCourseId(_: number, c: Course) {
+    return c.id;
+  }
+  trackBySessionId(_: number, s: StudySession) {
+    return s.id;
+  }
+  startEdit(s: StudySession) {
+    this.uiError = null;
+    this.editingId = s.id;
+    this.editForm = {
+      durationMinutes: s.durationMinutes,
+      notes: s.notes ?? '',
+    };
+  }
+
+  cancelEdit() {
+    this.uiError = null;
+    this.editingId = null;
+    this.savingId = null;
+    this.editForm = { durationMinutes: null, notes: '' };
+  }
+
+  saveEdit() {
+    if (!this.editingId) return;
+
+    const duration = this.editForm.durationMinutes;
+    if (!duration || duration <= 0) {
+      this.uiError = 'Duration must be a positive number.';
+      return;
+    }
+
+    this.uiError = null;
+    const id = this.editingId;
+    this.savingId = id;
+
+    const patch: Partial<StudySessionDTO> = {
+      durationMinutes: duration,
+      notes: this.editForm.notes.trim() || undefined,
+    };
+
+    this.studySessionsService.update(id, patch).subscribe({
+      next: () => {
+        // update local list (bez ponovnog fetch-a)
+        this.sessions = this.sessions.map((s) =>
+          s.id === id ? { ...s, ...patch } : s
+        );
+
+        this.savingId = null;
+        this.editingId = null;
+        this.editForm = { durationMinutes: null, notes: '' };
+      },
+      error: (e) => {
+        console.error(e);
+        this.uiError = 'Update failed.';
+        this.savingId = null;
+      },
+    });
+  }
 }
