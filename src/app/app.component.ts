@@ -16,7 +16,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 
-import { AuthService } from './services/auth/auth.services'; // <-- OVDE
+import { AuthService } from './services/auth/auth.services'; 
 
 @Component({
   selector: 'app-root',
