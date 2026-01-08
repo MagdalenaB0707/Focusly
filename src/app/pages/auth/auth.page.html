@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Focusly</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-segment [(ngModel)]="mode">
+    <ion-segment-button value="login"><ion-label>Login</ion-label></ion-segment-button>
+    <ion-segment-button value="register"><ion-label>Register</ion-label></ion-segment-button>
+  </ion-segment>
+
+  <ion-item *ngIf="mode === 'register'">
+    <ion-input label="First name" labelPlacement="stacked" [(ngModel)]="form.firstName"></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="mode === 'register'">
+    <ion-input label="Last name" labelPlacement="stacked" [(ngModel)]="form.lastName"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="Email" labelPlacement="stacked" type="email" [(ngModel)]="form.email"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="Password" labelPlacement="stacked" type="password" [(ngModel)]="form.password"></ion-input>
+  </ion-item>
+
+  <ion-button expand="block" (click)="submit()" [disabled]="loading">
+    {{ loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Create account') }}
+  </ion-button>
+
+  <ion-note color="danger" *ngIf="errorMsg" style="display:block; margin-top:10px;">
+    {{ errorMsg }}
+  </ion-note>
+</ion-content>

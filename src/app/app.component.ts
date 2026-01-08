@@ -13,10 +13,10 @@ import {
   IonMenuToggle,
   IonRouterOutlet,
   IonTitle,
-  IonToolbar
+  IonToolbar,
 } from '@ionic/angular/standalone';
 
-import { AuthService, CurrentUser } from './services/auth.services'; // <-- OVDE
+import { AuthService } from './services/auth/auth.services'; // <-- OVDE
 
 @Component({
   selector: 'app-root',
@@ -40,19 +40,20 @@ import { AuthService, CurrentUser } from './services/auth.services'; // <-- OVDE
   ],
 })
 export class AppComponent {
-  currentUser: CurrentUser | null = null;
 
   constructor(private auth: AuthService, private router: Router) {
-    // da odmah vidiš korisnika u meniju
-    if (!this.auth.currentUser) {
-      this.auth.setDemoUser();
-    }
+  this.auth.autoLogin();
 
-    this.auth.currentUser$.subscribe((u) => (this.currentUser = u));
-  }
+  this.auth.session$.subscribe((s) => {
+    if (!s || !this.auth.isAuthenticated) {
+      this.router.navigateByUrl('/auth', { replaceUrl: true });
+    }
+  });
+}
+
 
   logout() {
     this.auth.logout();
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl('/auth', { replaceUrl: true });
   }
 }

@@ -1,39 +1,27 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './services/auth/auth.guard';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    path: 'auth',
+    loadComponent: () => import('./pages/auth/auth.page').then(m => m.AuthPage),
   },
-  
+
   {
     path: 'home',
-    loadComponent: () =>
-      import('./pages/home/home.page').then((m) => m.HomePage),
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage),
   },
-
   {
-    path: 'studySessions',
-    loadComponent: () =>
-      import('./pages/study-sessions/study-sessions.page').then((m) => m.StudySessionsPage),
+    path: 'sessions',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/study-sessions/study-sessions.page').then(m => m.StudySessionsPage),
   },
-
   {
     path: 'courses',
-    loadComponent: () =>
-      import('./pages/courses/courses.page').then((m) => m.CoursesPage),
-  },
-
-  {
-    path: 'data-room',
-    loadComponent: () =>
-      import('./pages/data-room/data-room.page').then((m) => m.DataRoomPage),
-  },
-
-  {
-    path: 'login',
-    loadComponent: () =>
-      import('./pages/home/home.page').then((m) => m.HomePage),
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/courses/courses.page').then(m => m.CoursesPage),
   },
 ];
