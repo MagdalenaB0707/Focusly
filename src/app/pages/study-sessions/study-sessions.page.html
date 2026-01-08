@@ -9,71 +9,76 @@
 
 <ion-content class="ion-padding">
 
-  <!-- ADD FORM -->
+  <!-- Course dropdown -->
   <ion-item>
-    <ion-input
-      label="Course ID"
+    <ion-select
+      label="Course"
       labelPlacement="stacked"
+      placeholder="Select course"
       [(ngModel)]="form.courseId"
-      placeholder="npr. course_1"
-    ></ion-input>
+    >
+      <ion-select-option *ngFor="let c of courses; trackBy: trackByCourseId" [value]="c.id">
+        {{ c.title }}
+      </ion-select-option>
+    </ion-select>
   </ion-item>
 
+  <!-- Datetime -->
   <ion-item>
-    <ion-input
-      label="Date"
-      labelPlacement="stacked"
-      [(ngModel)]="form.date"
-      placeholder="YYYY-MM-DD"
-    ></ion-input>
+    <ion-datetime
+      presentation="date-time"
+      [firstDayOfWeek]="1"
+      [(ngModel)]="form.startedAtIso"
+    ></ion-datetime>
   </ion-item>
 
+  <!-- Duration -->
   <ion-item>
     <ion-input
-      label="Duration (min)"
+      label="Duration (minutes)"
       labelPlacement="stacked"
       type="number"
       [(ngModel)]="form.durationMinutes"
-      placeholder="npr. 45"
+      placeholder="e.g. 45"
     ></ion-input>
   </ion-item>
 
-  <ion-button expand="block" (click)="addSession()" [disabled]="saving">
+  <!-- Notes -->
+  <ion-item>
+    <ion-textarea
+      label="Notes"
+      labelPlacement="stacked"
+      [(ngModel)]="form.notes"
+      placeholder="Optional..."
+      autoGrow="true"
+    ></ion-textarea>
+  </ion-item>
+
+  <ion-button expand="block" (click)="createSession()" [disabled]="saving">
     {{ saving ? 'Saving...' : 'Add session' }}
   </ion-button>
 
-  <ion-note color="danger" *ngIf="uiError" style="display:block; margin-top: 10px;">
+  <ion-note color="danger" *ngIf="uiError" style="display:block; margin-top:10px;">
     {{ uiError }}
   </ion-note>
 
-  <ion-item lines="none">
-    <ion-label>
-      <p>Tip: Course ID može biti bilo šta za test. Posle ćemo ga vezati za Courses.</p>
-    </ion-label>
-  </ion-item>
+  <hr style="margin: 16px 0; opacity: 0.2;" />
 
-  <!-- REFRESH -->
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <!-- LOADING -->
-  <div *ngIf="loading" style="display:flex; justify-content:center; padding: 18px 0;">
+  <!-- List -->
+  <div *ngIf="loading" style="display:flex; justify-content:center; padding: 16px 0;">
     <ion-spinner></ion-spinner>
   </div>
 
-  <!-- EMPTY -->
-  <ion-note *ngIf="!loading && studySessions.length === 0" style="display:block;">
-    No study sessions yet.
+  <ion-note *ngIf="!loading && sessions.length === 0" style="display:block;">
+    No sessions yet.
   </ion-note>
 
-  <!-- LIST -->
-  <ion-list *ngIf="!loading && studySessions.length > 0">
-    <ion-item *ngFor="let s of studySessions; trackBy: trackById" lines="full">
+  <ion-list *ngIf="!loading && sessions.length > 0">
+    <ion-item *ngFor="let s of sessions; trackBy: trackBySessionId" lines="full">
       <ion-label>
-        <h2>{{ s.date }} — {{ s.durationMinutes }} min</h2>
-        <p>Course: {{ s.courseId }}</p>
-        <p style="opacity:0.6;">ID: {{ s.id }}</p>
+        <h2>{{ formatDateTime(s.startedAt) }} — {{ s.durationMinutes }} min</h2>
+        <p>Course: {{ courseTitleById(s.courseId) }}</p>
+        <p *ngIf="s.notes">{{ s.notes }}</p>
       </ion-label>
 
       <ion-button
