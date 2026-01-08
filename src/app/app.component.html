@@ -1,3 +1,56 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu contentId="main-content" type="overlay">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Focusly</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-menu-toggle auto-hide="true">
+          <ion-item routerLink="/home">
+            <ion-label>Home</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-menu-toggle auto-hide="true">
+          <ion-item routerLink="/studySessions">
+            <ion-label>Study Sessions</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-menu-toggle auto-hide="true">
+          <ion-item routerLink="/courses">
+            <ion-label>Courses</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-menu-toggle auto-hide="true">
+          <ion-item routerLink="/data-room">
+            <ion-label>Data Room</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+
+    <ion-footer class="menu-footer">
+      <ion-item>
+        <ion-label>
+          <div class="user-name">
+            {{ currentUser?.firstName }} {{ currentUser?.lastName }}
+          </div>
+          <div class="user-email">{{ currentUser?.email }}</div>
+        </ion-label>
+      </ion-item>
+
+      <ion-button expand="block" fill="outline" (click)="logout()">
+        Logout
+      </ion-button>
+    </ion-footer>
+  </ion-menu>
+
+  <div class="ion-page" id="main-content">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
 </ion-app>

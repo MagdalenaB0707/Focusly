@@ -1,0 +1,45 @@
+<!-- src/app/pages/courses/courses.page.html -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Courses</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-wrap">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <!-- Error -->
+  <ion-note color="danger" *ngIf="!loading && errorMsg">
+    {{ errorMsg }}
+  </ion-note>
+
+  <!-- Empty -->
+  <ion-note *ngIf="!loading && !errorMsg && courses.length === 0">
+    No courses yet.
+  </ion-note>
+
+  <!-- List -->
+  <ion-list *ngIf="!loading && !errorMsg && courses.length > 0">
+    <ion-item
+      *ngFor="let c of courses; trackBy: trackById"
+      lines="full"
+    >
+      <ion-label>
+        <h2>{{ c.title }}</h2>
+        <p *ngIf="c.description">{{ c.description }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

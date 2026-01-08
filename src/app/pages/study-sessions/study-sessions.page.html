@@ -1,0 +1,91 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Study Sessions</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- ADD FORM -->
+  <ion-item>
+    <ion-input
+      label="Course ID"
+      labelPlacement="stacked"
+      [(ngModel)]="form.courseId"
+      placeholder="npr. course_1"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      label="Date"
+      labelPlacement="stacked"
+      [(ngModel)]="form.date"
+      placeholder="YYYY-MM-DD"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      label="Duration (min)"
+      labelPlacement="stacked"
+      type="number"
+      [(ngModel)]="form.durationMinutes"
+      placeholder="npr. 45"
+    ></ion-input>
+  </ion-item>
+
+  <ion-button expand="block" (click)="addSession()" [disabled]="saving">
+    {{ saving ? 'Saving...' : 'Add session' }}
+  </ion-button>
+
+  <ion-note color="danger" *ngIf="uiError" style="display:block; margin-top: 10px;">
+    {{ uiError }}
+  </ion-note>
+
+  <ion-item lines="none">
+    <ion-label>
+      <p>Tip: Course ID može biti bilo šta za test. Posle ćemo ga vezati za Courses.</p>
+    </ion-label>
+  </ion-item>
+
+  <!-- REFRESH -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" style="display:flex; justify-content:center; padding: 18px 0;">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <!-- EMPTY -->
+  <ion-note *ngIf="!loading && studySessions.length === 0" style="display:block;">
+    No study sessions yet.
+  </ion-note>
+
+  <!-- LIST -->
+  <ion-list *ngIf="!loading && studySessions.length > 0">
+    <ion-item *ngFor="let s of studySessions; trackBy: trackById" lines="full">
+      <ion-label>
+        <h2>{{ s.date }} — {{ s.durationMinutes }} min</h2>
+        <p>Course: {{ s.courseId }}</p>
+        <p style="opacity:0.6;">ID: {{ s.id }}</p>
+      </ion-label>
+
+      <ion-button
+        slot="end"
+        fill="clear"
+        color="danger"
+        (click)="deleteSession(s.id)"
+        [disabled]="deletingId === s.id"
+      >
+        {{ deletingId === s.id ? '...' : 'Delete' }}
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
