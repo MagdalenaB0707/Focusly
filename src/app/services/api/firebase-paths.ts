@@ -6,5 +6,6 @@ export const paths = {
   courses: 'courses',
   studySessions: 'sessions',
   activities: 'activities',
+  goals: 'goals',
 };
 

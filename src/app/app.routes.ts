@@ -34,4 +34,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/data-room/data-room.page').then(m => m.DataRoomPage),
   },
+  {
+    path: 'goals',
+    loadComponent: () => import('./pages/goals/goals.page').then( m => m.GoalsPage)
+  },
 ];

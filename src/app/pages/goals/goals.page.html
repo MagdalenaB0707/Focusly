@@ -1,0 +1,119 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Goals</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Target Type -->
+  <ion-item>
+    <ion-select
+      label="Goal for"
+      labelPlacement="stacked"
+      [(ngModel)]="form.targetType"
+      (ionChange)="onTargetTypeChange()"
+    >
+      <ion-select-option value="activity">Activity</ion-select-option>
+      <ion-select-option value="course">Course</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Target dropdown -->
+  <ion-item>
+    <ion-select
+      label="Target"
+      labelPlacement="stacked"
+      placeholder="Select..."
+      [(ngModel)]="form.targetId"
+    >
+      <!-- Activities -->
+      <ion-select-option
+        *ngFor="let a of activities; trackBy: trackByActivityId"
+        [value]="a.id"
+        [disabled]="form.targetType !== 'activity'"
+      >
+        {{ a.title }}
+      </ion-select-option>
+
+      <!-- Courses -->
+      <ion-select-option
+        *ngFor="let c of courses; trackBy: trackByCourseId"
+        [value]="c.id"
+        [disabled]="form.targetType !== 'course'"
+      >
+        {{ c.title }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Period -->
+  <ion-item>
+    <ion-select
+      label="Period"
+      labelPlacement="stacked"
+      [(ngModel)]="form.period"
+    >
+      <ion-select-option value="daily">Daily</ion-select-option>
+      <ion-select-option value="weekly">Weekly</ion-select-option>
+      <ion-select-option value="monthly">Monthly</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Target minutes -->
+  <ion-item>
+    <ion-input
+      label="Target minutes"
+      labelPlacement="stacked"
+      type="number"
+      placeholder="e.g. 300"
+      [(ngModel)]="form.targetMinutes"
+    ></ion-input>
+  </ion-item>
+
+  <ion-button expand="block" (click)="createGoal()" [disabled]="saving">
+    {{ saving ? 'Saving...' : 'Add goal' }}
+  </ion-button>
+
+  <ion-note color="danger" *ngIf="uiError" style="display:block; margin-top:10px;">
+    {{ uiError }}
+  </ion-note>
+
+  <hr style="margin: 16px 0; opacity: 0.2;" />
+
+  <!-- Loading -->
+  <div *ngIf="loading" style="display:flex; justify-content:center; padding: 16px 0;">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <!-- Empty -->
+  <ion-note *ngIf="!loading && !uiError && goals.length === 0" style="display:block;">
+    No goals yet.
+  </ion-note>
+
+  <!-- List -->
+  <ion-list *ngIf="!loading && !uiError && goals.length > 0">
+    <ion-item *ngFor="let g of goals; trackBy: trackByGoalId" lines="full">
+      <ion-label>
+        <h2>
+          {{ labelForGoal(g) }}
+        </h2>
+        <p>Period: {{ g.period }} • Target: {{ g.targetMinutes }} min</p>
+      </ion-label>
+
+      <ion-button
+        slot="end"
+        fill="clear"
+        color="danger"
+        (click)="deleteGoal(g.id)"
+        [disabled]="deletingId === g.id"
+      >
+        {{ deletingId === g.id ? '...' : 'Delete' }}
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
