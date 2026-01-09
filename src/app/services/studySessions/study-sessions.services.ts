@@ -6,19 +6,18 @@ import {
   StudySession,
   StudySessionDTO,
 } from '../../models/study-session.model';
-import { AuthService } from '../auth.services';
+import { AuthService } from '../auth/auth.services';
 
 @Injectable({ providedIn: 'root' })
 export class StudySessionsService {
   constructor(private api: ApiService, private auth: AuthService) {}
 
   private get userId(): string {
-    const id = this.auth.currentUser?.id;
+    const id = this.auth.uid;
     if (!id) throw new Error('No logged in user.');
     return id;
   }
 
-  // ✅ READ: sve sessions, pa filter na klijentu po userId
   getAll(): Observable<StudySession[]> {
     return this.api
       .getList<StudySessionDTO>(paths.studySessions)
@@ -31,7 +30,7 @@ export class StudySessionsService {
     );
   }
 
-  // ✅ CREATE: upis u /sessions i dodaj userId automatski
+
   create(data: Omit<StudySessionDTO, 'userId'>): Observable<StudySession> {
     const dto: StudySessionDTO = { ...data, userId: this.userId };
 
@@ -40,12 +39,12 @@ export class StudySessionsService {
       .pipe(map((res) => ({ ...dto, id: res.name })));
   }
 
-  // ✅ UPDATE: patch na /sessions/{id}
+
   update(id: string, patch: Partial<StudySessionDTO>): Observable<void> {
     return this.api.update<StudySessionDTO>(paths.studySessions, id, patch);
   }
 
-  // ✅ DELETE: delete /sessions/{id}
+
   remove(id: string): Observable<void> {
     return this.api.remove(paths.studySessions, id);
   }

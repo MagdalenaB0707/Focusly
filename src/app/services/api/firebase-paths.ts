@@ -5,5 +5,6 @@ export const paths = {
   users: 'users',
   courses: 'courses',
   studySessions: 'sessions',
+  activities: 'activities',
 };
 

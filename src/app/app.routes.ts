@@ -24,4 +24,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/courses/courses.page').then(m => m.CoursesPage),
   },
+  {
+    path: 'activities',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/activities/activities.page').then(m => m.ActivitiesPage),
+  },
+  {
+    path: 'data-room',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/data-room/data-room.page').then(m => m.DataRoomPage),
+  },
 ];
