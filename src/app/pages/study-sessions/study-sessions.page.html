@@ -8,17 +8,43 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
-  <!-- Course dropdown -->
+  <!-- Target Type -->
   <ion-item>
     <ion-select
-      label="Course"
+      label="Type"
       labelPlacement="stacked"
-      placeholder="Select course"
-      [(ngModel)]="form.courseId"
+      [(ngModel)]="form.targetType"
+      (ionChange)="onTargetTypeChange()"
     >
-      <ion-select-option *ngFor="let c of courses; trackBy: trackByCourseId" [value]="c.id">
+      <ion-select-option value="course">Course</ion-select-option>
+      <ion-select-option value="activity">Activity</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Target dropdown -->
+  <ion-item>
+    <ion-select
+      label="Target"
+      labelPlacement="stacked"
+      placeholder="Select..."
+      [(ngModel)]="form.targetId"
+    >
+      <!-- Courses -->
+      <ion-select-option
+        *ngFor="let c of courses; trackBy: trackByCourseId"
+        [value]="c.id"
+        [disabled]="form.targetType !== 'course'"
+      >
         {{ c.title }}
+      </ion-select-option>
+
+      <!-- Activities -->
+      <ion-select-option
+        *ngFor="let a of activities; trackBy: trackByActivityId"
+        [value]="a.id"
+        [disabled]="form.targetType !== 'activity'"
+      >
+        {{ a.title }}
       </ion-select-option>
     </ion-select>
   </ion-item>
@@ -58,89 +84,113 @@
     {{ saving ? 'Saving...' : 'Add session' }}
   </ion-button>
 
-  <ion-note color="danger" *ngIf="uiError" style="display:block; margin-top:10px;">
+  <ion-note
+    color="danger"
+    *ngIf="uiError"
+    style="display: block; margin-top: 10px"
+  >
     {{ uiError }}
   </ion-note>
 
-  <hr style="margin: 16px 0; opacity: 0.2;" />
+  <hr style="margin: 16px 0; opacity: 0.2" />
 
   <!-- List -->
-  <div *ngIf="loading" style="display:flex; justify-content:center; padding: 16px 0;">
+  <div
+    *ngIf="loading"
+    style="display: flex; justify-content: center; padding: 16px 0"
+  >
     <ion-spinner></ion-spinner>
   </div>
 
-  <ion-note *ngIf="!loading && sessions.length === 0" style="display:block;">
+  <ion-note *ngIf="!loading && sessions.length === 0" style="display: block">
     No sessions yet.
   </ion-note>
 
   <ion-list *ngIf="!loading && sessions.length > 0">
-  <div *ngFor="let s of sessions; trackBy: trackBySessionId">
-    <ion-item lines="full">
-      <ion-label>
-        <h2>{{ formatDateTime(s.startedAt) }} — {{ s.durationMinutes }} min</h2>
-        <p>Course: {{ courseTitleById(s.courseId) }}</p>
-        <p *ngIf="s.notes">{{ s.notes }}</p>
-      </ion-label>
+    <div *ngFor="let s of sessions; trackBy: trackBySessionId">
+      <ion-item lines="full">
+        <ion-label>
+          <h2>
+            {{ formatDateTime(s.startedAt) }} — {{ s.durationMinutes }} min
+          </h2>
+          <p>{{ s.targetType }}: {{ targetLabel(s) }}</p>
+          <p *ngIf="s.notes">{{ s.notes }}</p>
+        </ion-label>
 
-      <!-- EDIT BUTTON -->
-      <ion-button
-        slot="end"
-        fill="clear"
-        (click)="startEdit(s)"
-        *ngIf="editingId !== s.id"
-      >
-        Edit
-      </ion-button>
-
-      <!-- DELETE BUTTON -->
-      <ion-button
-        slot="end"
-        fill="clear"
-        color="danger"
-        (click)="deleteSession(s.id)"
-        [disabled]="deletingId === s.id || savingId === s.id"
-        *ngIf="editingId !== s.id"
-      >
-        {{ deletingId === s.id ? '...' : 'Delete' }}
-      </ion-button>
-    </ion-item>
-
-    <!-- INLINE EDIT PANEL -->
-    <div *ngIf="editingId === s.id" style="padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-      <ion-item>
-        <ion-input
-          label="Duration (minutes)"
-          labelPlacement="stacked"
-          type="number"
-          [(ngModel)]="editForm.durationMinutes"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-textarea
-          label="Notes"
-          labelPlacement="stacked"
-          [(ngModel)]="editForm.notes"
-          autoGrow="true"
-        ></ion-textarea>
-      </ion-item>
-
-      <div style="display:flex; gap: 10px; margin-top: 10px;">
-        <ion-button expand="block" (click)="saveEdit()" [disabled]="savingId === s.id">
-          {{ savingId === s.id ? 'Saving...' : 'Save' }}
+        <ion-button
+          slot="end"
+          fill="clear"
+          (click)="startEdit(s)"
+          *ngIf="editingId !== s.id"
+        >
+          Edit
         </ion-button>
 
-        <ion-button expand="block" fill="outline" (click)="cancelEdit()" [disabled]="savingId === s.id">
-          Cancel
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="danger"
+          (click)="deleteSession(s.id)"
+          [disabled]="deletingId === s.id || savingId === s.id"
+          *ngIf="editingId !== s.id"
+        >
+          {{ deletingId === s.id ? '...' : 'Delete' }}
         </ion-button>
+      </ion-item>
+
+      <!-- INLINE EDIT PANEL -->
+      <div
+        *ngIf="editingId === s.id"
+        style="
+          padding: 10px 14px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        "
+      >
+        <ion-item>
+          <ion-input
+            label="Duration (minutes)"
+            labelPlacement="stacked"
+            type="number"
+            [(ngModel)]="editForm.durationMinutes"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-textarea
+            label="Notes"
+            labelPlacement="stacked"
+            [(ngModel)]="editForm.notes"
+            autoGrow="true"
+          ></ion-textarea>
+        </ion-item>
+
+        <div style="display: flex; gap: 10px; margin-top: 10px">
+          <ion-button
+            expand="block"
+            (click)="saveEdit()"
+            [disabled]="savingId === s.id"
+          >
+            {{ savingId === s.id ? 'Saving...' : 'Save' }}
+          </ion-button>
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            (click)="cancelEdit()"
+            [disabled]="savingId === s.id"
+          >
+            Cancel
+          </ion-button>
+        </div>
+
+        <ion-note
+          color="danger"
+          *ngIf="uiError"
+          style="display: block; margin-top: 8px"
+        >
+          {{ uiError }}
+        </ion-note>
       </div>
-
-      <ion-note color="danger" *ngIf="uiError" style="display:block; margin-top: 8px;">
-        {{ uiError }}
-      </ion-note>
     </div>
-  </div>
-</ion-list>
-
-
+  </ion-list>
 </ion-content>

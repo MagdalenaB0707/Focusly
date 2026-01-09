@@ -8,7 +8,6 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
   <!-- Target Type -->
   <ion-item>
     <ion-select
@@ -78,19 +77,29 @@
     {{ saving ? 'Saving...' : 'Add goal' }}
   </ion-button>
 
-  <ion-note color="danger" *ngIf="uiError" style="display:block; margin-top:10px;">
+  <ion-note
+    color="danger"
+    *ngIf="uiError"
+    style="display: block; margin-top: 10px"
+  >
     {{ uiError }}
   </ion-note>
 
-  <hr style="margin: 16px 0; opacity: 0.2;" />
+  <hr style="margin: 16px 0; opacity: 0.2" />
 
   <!-- Loading -->
-  <div *ngIf="loading" style="display:flex; justify-content:center; padding: 16px 0;">
+  <div
+    *ngIf="loading"
+    style="display: flex; justify-content: center; padding: 16px 0"
+  >
     <ion-spinner></ion-spinner>
   </div>
 
   <!-- Empty -->
-  <ion-note *ngIf="!loading && !uiError && goals.length === 0" style="display:block;">
+  <ion-note
+    *ngIf="!loading && !uiError && goals.length === 0"
+    style="display: block"
+  >
     No goals yet.
   </ion-note>
 
@@ -98,10 +107,14 @@
   <ion-list *ngIf="!loading && !uiError && goals.length > 0">
     <ion-item *ngFor="let g of goals; trackBy: trackByGoalId" lines="full">
       <ion-label>
-        <h2>
-          {{ labelForGoal(g) }}
-        </h2>
+        <h2>{{ labelForGoal(g) }}</h2>
         <p>Period: {{ g.period }} • Target: {{ g.targetMinutes }} min</p>
+
+        <p>
+          Progress: {{ getGoalProgress(g).done }} / {{ getGoalProgress(g).target
+          }} min ({{ getGoalProgress(g).pct }}%) • Remaining: {{
+          getGoalProgress(g).remaining }} min
+        </p>
       </ion-label>
 
       <ion-button
@@ -115,5 +128,4 @@
       </ion-button>
     </ion-item>
   </ion-list>
-
 </ion-content>

@@ -27,6 +27,8 @@ import { Goal, GoalPeriod, GoalTargetType } from 'src/app/models/goal.model';
 import { ActivitiesService } from 'src/app/services/activities/activities.services';
 import { CoursesService } from 'src/app/services/courses/courses.service';
 import { GoalsService } from 'src/app/services/goals/goals.services';
+import { StudySession } from 'src/app/models/study-session.model';
+import { StudySessionsService } from 'src/app/services/studySessions/study-sessions.services';
 
 @Component({
   selector: 'app-goals',
@@ -60,6 +62,7 @@ export class GoalsPage implements OnInit, OnDestroy {
   activities: Activity[] = [];
   courses: Course[] = [];
   goals: Goal[] = [];
+  studySessions: StudySession[] = [];
 
   loading = false;
   saving = false;
@@ -83,13 +86,52 @@ export class GoalsPage implements OnInit, OnDestroy {
   constructor(
     private activitiesService: ActivitiesService,
     private coursesService: CoursesService,
-    private goalsService: GoalsService
+    private goalsService: GoalsService,
+    private studySessionsService: StudySessionsService  
   ) {}
+  sessions: StudySession[] = [];
+
+  loadSessions() {
+    this.studySessionsService
+      .getAll()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => (this.sessions = data),
+        error: (e) => console.error('Sessions load failed', e),
+      });
+  }
+
+  getGoalProgress(g: Goal): {
+    done: number;
+    target: number;
+    pct: number;
+    remaining: number;
+  } {
+    const { from, to } = this.getPeriodRange(g.period);
+
+    const done = this.sessions
+      .filter(
+        (s) =>
+          s.targetType === g.targetType &&
+          s.targetId === g.targetId &&
+          s.startedAt >= from &&
+          s.startedAt < to
+      )
+      .reduce((sum, s) => sum + (s.durationMinutes || 0), 0);
+
+    const target = g.targetMinutes || 0;
+    const pct =
+      target > 0 ? Math.min(100, Math.round((done / target) * 100)) : 0;
+    const remaining = Math.max(0, target - done);
+
+    return { done, target, pct, remaining };
+  }
 
   ngOnInit() {
     this.loadActivities();
     this.loadCourses();
     this.loadGoals();
+    this.loadSessions();
   }
 
   ngOnDestroy(): void {
@@ -200,7 +242,9 @@ export class GoalsPage implements OnInit, OnDestroy {
 
   labelForGoal(g: Goal): string {
     if (g.targetType === 'activity') {
-      return this.activities.find((a) => a.id === g.targetId)?.title ?? '(Activity)';
+      return (
+        this.activities.find((a) => a.id === g.targetId)?.title ?? '(Activity)'
+      );
     }
     return this.courses.find((c) => c.id === g.targetId)?.title ?? '(Course)';
   }
@@ -213,5 +257,81 @@ export class GoalsPage implements OnInit, OnDestroy {
   }
   trackByGoalId(_: number, g: Goal) {
     return g.id;
+  }
+
+  private getPeriodRange(period: 'daily' | 'weekly' | 'monthly'): {
+    from: number;
+    to: number;
+  } {
+    const now = new Date();
+
+    if (period === 'daily') {
+      const from = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        0,
+        0,
+        0,
+        0
+      ).getTime();
+      const to = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0,
+        0,
+        0,
+        0
+      ).getTime();
+      return { from, to };
+    }
+
+    if (period === 'weekly') {
+      // Monday start (EU)
+      const day = now.getDay(); // 0=Sun,1=Mon...
+      const diffToMonday = (day + 6) % 7; // Mon->0, Tue->1, Sun->6
+      const monday = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() - diffToMonday,
+        0,
+        0,
+        0,
+        0
+      );
+      const from = monday.getTime();
+      const to = new Date(
+        monday.getFullYear(),
+        monday.getMonth(),
+        monday.getDate() + 7,
+        0,
+        0,
+        0,
+        0
+      ).getTime();
+      return { from, to };
+    }
+
+    // monthly
+    const from = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1,
+      0,
+      0,
+      0,
+      0
+    ).getTime();
+    const to = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      1,
+      0,
+      0,
+      0,
+      0
+    ).getTime();
+    return { from, to };
   }
 }

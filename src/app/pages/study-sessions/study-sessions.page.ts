@@ -23,8 +23,11 @@ import {
 import { Subject, takeUntil } from 'rxjs';
 
 import { Course } from 'src/app/models/course.model';
-import { StudySession, StudySessionDTO } from 'src/app/models/study-session.model';
+import { Activity } from 'src/app/models/activity.model';
+import { StudySession, StudySessionDTO, SessionTargetType } from 'src/app/models/study-session.model';
+
 import { CoursesService } from 'src/app/services/courses/courses.service';
+import { ActivitiesService } from 'src/app/services/activities/activities.services';
 import { StudySessionsService } from 'src/app/services/studySessions/study-sessions.services';
 
 @Component({
@@ -55,6 +58,7 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
 })
 export class StudySessionsPage implements OnInit, OnDestroy {
   courses: Course[] = [];
+  activities: Activity[] = [];
   sessions: StudySession[] = [];
 
   loading = false;
@@ -63,12 +67,14 @@ export class StudySessionsPage implements OnInit, OnDestroy {
   uiError: string | null = null;
 
   form: {
-    courseId: string;
-    startedAtIso: string; // ion-datetime radi sa ISO stringom
+    targetType: SessionTargetType;
+    targetId: string;
+    startedAtIso: string;
     durationMinutes: number | null;
     notes: string;
   } = {
-    courseId: '',
+    targetType: 'course',
+    targetId: '',
     startedAtIso: new Date().toISOString(),
     durationMinutes: null,
     notes: '',
@@ -78,11 +84,13 @@ export class StudySessionsPage implements OnInit, OnDestroy {
 
   constructor(
     private coursesService: CoursesService,
+    private activitiesService: ActivitiesService,
     private studySessionsService: StudySessionsService
   ) {}
 
   ngOnInit() {
     this.loadCourses();
+    this.loadActivities();
     this.loadSessions();
   }
 
@@ -91,42 +99,46 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  onTargetTypeChange() {
+    this.form.targetId = ''; // reset target
+  }
+
   loadCourses() {
-    this.coursesService
-      .getAll()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => (this.courses = data),
-        error: (e) => console.error('Courses load failed', e),
-      });
+    this.coursesService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data) => (this.courses = data),
+      error: (e) => console.error('Courses load failed', e),
+    });
+  }
+
+  loadActivities() {
+    this.activitiesService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data) => (this.activities = data),
+      error: (e) => console.error('Activities load failed', e),
+    });
   }
 
   loadSessions() {
     this.loading = true;
     this.uiError = null;
 
-    this.studySessionsService
-      .getAll()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          // (opciono) sortiraj najnovije prvo
-          this.sessions = [...data].sort((a, b) => b.startedAt - a.startedAt);
-          this.loading = false;
-        },
-        error: (e) => {
-          console.error(e);
-          this.uiError = 'Failed to load sessions.';
-          this.loading = false;
-        },
-      });
+    this.studySessionsService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data) => {
+        this.sessions = [...data].sort((a, b) => b.startedAt - a.startedAt);
+        this.loading = false;
+      },
+      error: (e) => {
+        console.error(e);
+        this.uiError = 'Failed to load sessions.';
+        this.loading = false;
+      },
+    });
   }
 
   createSession() {
     this.uiError = null;
 
-    if (!this.form.courseId) {
-      this.uiError = 'Select a course.';
+    if (!this.form.targetId) {
+      this.uiError = `Select a ${this.form.targetType}.`;
       return;
     }
     if (!this.form.durationMinutes || this.form.durationMinutes <= 0) {
@@ -134,7 +146,7 @@ export class StudySessionsPage implements OnInit, OnDestroy {
       return;
     }
 
-    const startedAt = Date.parse(this.form.startedAtIso); // ms
+    const startedAt = Date.parse(this.form.startedAtIso);
     if (Number.isNaN(startedAt)) {
       this.uiError = 'Invalid date/time.';
       return;
@@ -144,7 +156,8 @@ export class StudySessionsPage implements OnInit, OnDestroy {
 
     this.studySessionsService
       .create({
-        courseId: this.form.courseId,
+        targetType: this.form.targetType,
+        targetId: this.form.targetId,
         startedAt,
         durationMinutes: this.form.durationMinutes,
         notes: this.form.notes.trim() || undefined,
@@ -153,7 +166,6 @@ export class StudySessionsPage implements OnInit, OnDestroy {
         next: (created) => {
           this.sessions = [created, ...this.sessions];
           this.saving = false;
-          // reset minimalno
           this.form.durationMinutes = null;
           this.form.notes = '';
         },
@@ -182,13 +194,19 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     });
   }
 
-  courseTitleById(courseId: string): string {
-    return this.courses.find((c) => c.id === courseId)?.title ?? courseId;
+  // --- label helpers ---
+  targetLabel(s: StudySession): string {
+    if (s.targetType === 'course') {
+      return this.courses.find((c) => c.id === s.targetId)?.title ?? s.targetId;
+    }
+    return this.activities.find((a) => a.id === s.targetId)?.title ?? s.targetId;
   }
 
   formatDateTime(ms: number): string {
     return new Date(ms).toLocaleString();
   }
+
+  // --- inline edit (samo duration + notes, ostalo ne diramo) ---
   editingId: string | null = null;
   savingId: string | null = null;
 
@@ -197,12 +215,6 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     notes: '',
   };
 
-  trackByCourseId(_: number, c: Course) {
-    return c.id;
-  }
-  trackBySessionId(_: number, s: StudySession) {
-    return s.id;
-  }
   startEdit(s: StudySession) {
     this.uiError = null;
     this.editingId = s.id;
@@ -228,7 +240,6 @@ export class StudySessionsPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.uiError = null;
     const id = this.editingId;
     this.savingId = id;
 
@@ -239,11 +250,7 @@ export class StudySessionsPage implements OnInit, OnDestroy {
 
     this.studySessionsService.update(id, patch).subscribe({
       next: () => {
-        // update local list (bez ponovnog fetch-a)
-        this.sessions = this.sessions.map((s) =>
-          s.id === id ? { ...s, ...patch } : s
-        );
-
+        this.sessions = this.sessions.map((s) => (s.id === id ? { ...s, ...patch } : s));
         this.savingId = null;
         this.editingId = null;
         this.editForm = { durationMinutes: null, notes: '' };
@@ -255,4 +262,8 @@ export class StudySessionsPage implements OnInit, OnDestroy {
       },
     });
   }
+
+  trackByCourseId(_: number, c: Course) { return c.id; }
+  trackByActivityId(_: number, a: Activity) { return a.id; }
+  trackBySessionId(_: number, s: StudySession) { return s.id; }
 }
