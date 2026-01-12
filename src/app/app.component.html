@@ -49,9 +49,10 @@
     </ion-content>
 
     <ion-footer class="menu-footer">
-      <ion-item>
+      <ion-item lines="none" class="user-email-item">
         <ion-label>
-
+          <p class="user-email-label">Logged in as</p>
+          <h3 class="user-email">{{ userEmail || '—' }}</h3>
         </ion-label>
       </ion-item>
 
@@ -59,6 +60,7 @@
         Logout
       </ion-button>
     </ion-footer>
+
   </ion-menu>
 
   <div class="ion-page" id="main-content">
