@@ -33,6 +33,7 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
 @Component({
   selector: 'app-study-sessions',
   templateUrl: './study-sessions.page.html',
+  styleUrl: './study-sessions.page.scss',
   standalone: true,
   imports: [
     CommonModule,

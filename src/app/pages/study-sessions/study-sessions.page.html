@@ -139,13 +139,8 @@
       </ion-item>
 
       <!-- INLINE EDIT PANEL -->
-      <div
-        *ngIf="editingId === s.id"
-        style="
-          padding: 10px 14px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        "
-      >
+      <div *ngIf="editingId === s.id" class="edit-panel">
+
         <ion-item>
           <ion-input
             label="Duration (minutes)"

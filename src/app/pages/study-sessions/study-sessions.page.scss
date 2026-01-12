@@ -1,0 +1,194 @@
+:host {
+  --bg: #0f172a;
+  --toolbar: #020617;
+
+  --card: #1e293b;
+  --card-border: #334155;
+
+  --text: #f8fafc;
+  --muted: #94a3b8;
+
+  --accent: #38bdf8;
+  --danger: #ef4444;
+}
+
+/* Page background */
+ion-content {
+  --background: var(--bg);
+}
+
+/* Header */
+ion-header ion-toolbar {
+  --background: var(--toolbar);
+  --color: var(--text);
+  border-bottom: 1px solid #1e293b;
+}
+
+ion-title {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ========= Form (select/input/datetime/textarea) ========= */
+ion-item {
+  --background: var(--card);
+  --color: var(--text);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  margin: 10px 0;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+}
+
+ion-item::part(native) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* Stacked labels */
+ion-select::part(label),
+ion-input::part(label),
+ion-textarea::part(label) {
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Control colors */
+ion-select,
+ion-input,
+ion-textarea {
+  --color: var(--text);
+  --placeholder-color: rgba(148, 163, 184, 0.75);
+}
+
+/* Focus ring */
+ion-item.item-has-focus {
+  border-color: rgba(56, 189, 248, 0.9);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15),
+    0 10px 22px rgba(0, 0, 0, 0.25);
+}
+
+/* ion-datetime: da ne bude “default white” */
+ion-datetime {
+  --background: transparent;
+  --color: var(--text);
+  --title-color: var(--text);
+  --wheel-highlight-background: rgba(56, 189, 248, 0.15);
+  --wheel-fade-background-rgb: 15, 23, 42; /* bg fade */
+}
+
+/* ========= Primary buttons ========= */
+ion-button {
+  --border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  height: 44px;
+}
+
+/* Block primary button */
+ion-button[expand="block"]:not([fill="outline"]) {
+  --background: rgba(56, 189, 248, 0.18);
+  --color: var(--text);
+  --border-color: rgba(56, 189, 248, 0.7);
+  --border-width: 1px;
+  --border-style: solid;
+}
+
+ion-button[expand="block"]:not([fill="outline"]):hover {
+  --border-color: rgba(56, 189, 248, 1);
+}
+
+/* Outline button */
+ion-button[fill="outline"] {
+  --background: transparent;
+  --color: var(--text);
+  --border-color: rgba(148, 163, 184, 0.6);
+  --border-width: 1px;
+  --border-style: solid;
+}
+
+/* Clear buttons in list (Edit/Delete) */
+ion-button[fill="clear"] {
+  --color: var(--muted);
+  font-weight: 800;
+}
+
+ion-button[color="danger"] {
+  --color: var(--danger);
+}
+
+/* Error */
+ion-note[color="danger"] {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Divider */
+hr {
+  border: none;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.18);
+  margin: 16px 0 !important;
+}
+
+/* ========= List ========= */
+ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+/* Session row as a card */
+ion-list ion-item[lines="full"] {
+  --background: var(--card);
+  border: 1px solid rgba(51, 65, 85, 0.8);
+  border-radius: 18px;
+  margin: 12px 0;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+}
+
+/* Title + details */
+ion-list ion-item ion-label h2 {
+  color: var(--text);
+  font-weight: 800;
+  margin: 0;
+}
+
+ion-list ion-item ion-label p {
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* Spinner */
+ion-spinner {
+  color: var(--accent);
+}
+
+/* ========= INLINE EDIT PANEL =========
+   Pošto ti je to plain <div style="...">, ovde ga “pretvaramo” u card look.
+   Ne možemo direktno targetovati taj div bez klase,
+   ali možemo stilizovati elemente unutra (ion-item, buttons) da vizuelno legnu.
+*/
+ion-list div > div ion-item {
+  /* edit panel ion-items: malo “lakši” nego glavni form */
+  --background: transparent;
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  box-shadow: none;
+  margin: 10px 0;
+}
+
+ion-list div > div {
+  /* edit panel wrapper (radi i bez klase) */
+  background: rgba(2, 6, 23, 0.35);
+  border: 1px solid rgba(51, 65, 85, 0.55);
+  border-radius: 16px;
+  margin: -6px 0 14px 0; /* da se “zalepi” uz card iznad */
+}
+.edit-panel {
+  padding: 12px 14px;
+  background: rgba(2, 6, 23, 0.35);
+  border: 1px solid rgba(51, 65, 85, 0.55);
+  border-radius: 16px;
+  margin: -6px 0 14px 0;
+}
