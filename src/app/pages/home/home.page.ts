@@ -47,6 +47,8 @@ type BreakdownRow = {
 @Component({
   selector: 'app-home-page',
   templateUrl: './home.page.html',
+  styleUrls: ['./home.page.scss'],
+
   standalone: true,
   imports: [
     CommonModule,

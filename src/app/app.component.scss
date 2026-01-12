@@ -11,3 +11,99 @@
   font-size: 12px;
   opacity: 0.8;
 }
+/* ===== Sidebar container ===== */
+ion-menu {
+  --background: #0b1224; /* tamniji sidebar */
+  --width: 280px;
+  border-right: 1px solid #1e293b;
+}
+
+/* Header */
+ion-menu ion-header ion-toolbar {
+  --background: #020617;
+  --color: #f8fafc;
+  border-bottom: 1px solid #1e293b;
+}
+
+ion-menu ion-title {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Content padding inside menu */
+ion-menu ion-content {
+  --background: #0b1224;
+}
+
+/* List base */
+ion-menu ion-list {
+  background: transparent;
+  padding-top: 6px;
+}
+
+/* Menu items (cards-ish) */
+ion-menu ion-item {
+  --background: transparent;
+  --color: #e2e8f0;
+
+  margin: 8px 10px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+
+  transition: transform 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+/* Hover effect (desktop) */
+ion-menu ion-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(56, 189, 248, 0.6);
+}
+
+/* Label text */
+ion-menu ion-label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Make ion-item look “compact” */
+ion-menu ion-item::part(native) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* ===== Active route highlight =====
+   Radi ako dodaš routerLinkActive="active-link" na ion-item (preporučujem)
+*/
+ion-menu ion-item.active-link {
+  --background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.9);
+}
+
+/* ===== Footer ===== */
+.menu-footer {
+  border-top: 1px solid #1e293b;
+  padding: 10px 12px 14px;
+  background: #0b1224;
+}
+
+/* Logout button */
+.menu-footer ion-button {
+  --background: transparent;
+  --color: #f8fafc;
+  --border-color: rgba(148, 163, 184, 0.6);
+  --border-radius: 14px;
+  --border-width: 1px;
+  --border-style: solid;
+
+  height: 44px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* Hover logout */
+.menu-footer ion-button:hover {
+  --border-color: rgba(56, 189, 248, 0.9);
+}

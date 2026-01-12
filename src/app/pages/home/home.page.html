@@ -23,6 +23,7 @@
                 <h2>{{ minutesToday }}m</h2>
               </ion-label>
             </ion-item>
+
           </ion-col>
 
           <ion-col size="4">
@@ -48,11 +49,7 @@
       <ion-note *ngIf="loading" style="display: block; margin-top: 8px">
         Loading...
       </ion-note>
-      <ion-note
-        color="danger"
-        *ngIf="errorMsg"
-        style="display: block; margin-top: 8px"
-      >
+      <ion-note color="danger" *ngIf="errorMsg" style="display: block; margin-top: 8px">
         {{ errorMsg }}
       </ion-note>
     </ion-card-content>
@@ -79,10 +76,7 @@
       <ion-note *ngIf="streakDays > 0" style="display: block; margin-top: 8px">
         Current streak: <b>{{ streakDays }}</b> day(s)
       </ion-note>
-      <ion-note
-        *ngIf="streakDays === 0"
-        style="display: block; margin-top: 8px"
-      >
+      <ion-note *ngIf="streakDays === 0" style="display: block; margin-top: 8px">
         No streak yet (start today 💪)
       </ion-note>
     </ion-card-content>
@@ -174,9 +168,7 @@
       </ion-note>
 
       <ion-list *ngIf="activityBreakdown.length > 0">
-        <ion-item
-          *ngFor="let row of activityBreakdown; trackBy: trackByBreakdownId"
-        >
+        <ion-item *ngFor="let row of activityBreakdown; trackBy: trackByBreakdownId">
           <ion-label>
             <h2 style="margin: 0">{{ row.label }}</h2>
             <p style="margin: 6px 0 0 0">
