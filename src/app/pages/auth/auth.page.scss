@@ -1,0 +1,107 @@
+:host {
+  --bg: #0f172a;
+  --toolbar: #020617;
+
+  --card: #1e293b;
+  --card-border: #334155;
+
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --danger: #ef4444;
+}
+
+/* Background */
+ion-content {
+  --background: var(--bg);
+}
+
+/* Header */
+ion-header ion-toolbar {
+  --background: var(--toolbar);
+  --color: var(--text);
+  border-bottom: 1px solid #1e293b;
+}
+
+ion-title {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Segment (Login/Register tabs) */
+ion-segment {
+  background: #020617;
+  border-radius: 16px;
+  padding: 4px;
+  margin-bottom: 18px;
+  border: 1px solid #1e293b;
+}
+
+ion-segment-button {
+  --color: var(--muted);
+  --color-checked: var(--text);
+  --background-checked: rgba(56, 189, 248, 0.15);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Form fields */
+ion-item {
+  --background: var(--card);
+  --color: var(--text);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  margin: 12px 0;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+}
+
+/* Inner padding fix */
+ion-item::part(native) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* Labels */
+ion-input::part(label) {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Placeholder + text */
+ion-input {
+  --color: var(--text);
+  --placeholder-color: rgba(148, 163, 184, 0.7);
+}
+
+/* Focus highlight */
+ion-item.item-has-focus {
+  border-color: rgba(56, 189, 248, 0.9);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15),
+    0 10px 22px rgba(0, 0, 0, 0.25);
+}
+
+/* Main button */
+ion-button[expand="block"] {
+  margin-top: 18px;
+  height: 46px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+
+  --background: rgba(56, 189, 248, 0.18);
+  --color: var(--text);
+  --border-radius: 16px;
+
+  --border-color: rgba(56, 189, 248, 0.6);
+  --border-width: 1px;
+  --border-style: solid;
+}
+
+ion-button[expand="block"]:hover {
+  --border-color: rgba(56, 189, 248, 1);
+}
+
+/* Error */
+ion-note[color="danger"] {
+  color: var(--danger);
+  font-weight: 600;
+}

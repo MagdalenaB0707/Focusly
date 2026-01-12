@@ -17,6 +17,7 @@ type Mode = 'login' | 'register';
   selector: 'app-auth',
   standalone: true,
   templateUrl: './auth.page.html',
+  styleUrl: '/auth.page.scss',
   imports: [
     CommonModule, FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
