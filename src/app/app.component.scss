@@ -1,11 +1,132 @@
-/* ============================= */
-/* USER EMAIL CARD */
-/* ============================= */
+/* =============================
+   FORCE DARK MENU (shadow DOM)
+   ============================= */
+ion-menu::part(container) {
+  background: #0b1224 !important;
+  border-right: 1px solid #1e293b;
+}
+
+/* menu content bg */
+ion-menu ion-content {
+  --background: #0b1224 !important;
+}
+
+/* remove default list bg */
+ion-menu ion-list {
+  background: transparent !important;
+  padding-top: 6px;
+}
+
+/* =============================
+   MENU HEADER
+   ============================= */
+ion-menu ion-header ion-toolbar {
+  --background: #020617 !important;
+  --color: #f8fafc !important;
+  border-bottom: 1px solid #1e293b;
+  --min-height: 56px;
+}
+
+/* title should not eat end slot */
+ion-menu ion-title {
+  padding-inline-end: 48px; /* leave room for X button */
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.menu-header span {
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+/* end slot button must be visible */
+ion-menu ion-buttons[slot="end"] {
+  display: flex !important;
+  align-items: center;
+}
+
+/* close button (ONLY this one) */
+.menu-close-btn {
+  --color: #f8fafc;
+  --padding-start: 6px;
+  --padding-end: 6px;
+}
+
+.menu-close-btn ion-icon {
+  font-size: 26px;
+  color: #f8fafc;
+}
+
+/* =============================
+   MENU LINKS (ONLY the nav list)
+   ============================= */
+
+/* target only items inside the list */
+ion-menu ion-content ion-list ion-item {
+  --background: transparent !important;
+  --color: #e2e8f0 !important;
+
+  margin: 8px 10px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+
+  transition: transform 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+/* compact padding */
+ion-menu ion-content ion-list ion-item::part(native) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* label */
+ion-menu ion-content ion-list ion-label {
+  font-weight: 650;
+  font-size: 14px;
+}
+
+/* hover */
+ion-menu ion-content ion-list ion-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(56, 189, 248, 0.6);
+}
+
+/* active link */
+ion-menu ion-content ion-list ion-item.active-link {
+  --background: rgba(56, 189, 248, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.9);
+}
+
+/* =============================
+   FOOTER (email card + logout)
+   ============================= */
+.menu-footer {
+  background: #0b1224;
+  border-top: 1px solid #1e293b;
+  padding: 10px 12px 14px;
+}
+
+/* email card */
 .user-email-item {
-  --background: transparent;
+  --background: transparent !important;
   border: 1px solid rgba(51, 65, 85, 0.7);
   border-radius: 14px;
-  margin: 10px 12px 12px;
+  margin: 10px 0 12px 0; /* in footer already padded */
 }
 
 .user-email-item::part(native) {
@@ -17,99 +138,18 @@
   margin: 0;
   font-size: 12px;
   color: rgba(148, 163, 184, 0.9);
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .user-email {
   margin: 4px 0 0 0;
   font-size: 14px;
   color: #f8fafc;
-  font-weight: 700;
+  font-weight: 800;
   word-break: break-word;
 }
 
-/* ============================= */
-/* FORCE DARK MENU BACKGROUND */
-/* ============================= */
-ion-menu::part(container) {
-  background: #0b1224 !important;
-}
-
-/* Force background for content */
-ion-menu ion-content {
-  --background: #0b1224 !important;
-}
-
-/* Force list not to become white */
-ion-menu ion-list {
-  background: transparent !important;
-}
-
-/* ============================= */
-/* MENU HEADER */
-/* ============================= */
-ion-menu ion-header ion-toolbar {
-  --background: #020617 !important;
-  --color: #f8fafc !important;
-  border-bottom: 1px solid #1e293b;
-}
-
-ion-menu ion-title {
-  font-weight: 700;
-  letter-spacing: 0.3px;
-}
-
-/* ============================= */
-/* MENU ITEMS */
-/* ============================= */
-ion-menu ion-item {
-  --background: transparent !important;
-  --color: #e2e8f0 !important;
-
-  margin: 8px 10px;
-  border-radius: 14px;
-
-  border: 1px solid rgba(51, 65, 85, 0.7);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
-
-  transition: transform 0.15s ease, border-color 0.15s ease;
-}
-
-ion-menu ion-item:hover {
-  transform: translateY(-1px);
-  border-color: rgba(56, 189, 248, 0.6);
-}
-
-ion-menu ion-label {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-ion-menu ion-item::part(native) {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-/* ============================= */
-/* ACTIVE LINK */
-/* ============================= */
-ion-menu ion-item.active-link {
-  --background: rgba(56, 189, 248, 0.12) !important;
-  border-color: rgba(56, 189, 248, 0.9);
-}
-
-/* ============================= */
-/* FOOTER */
-/* ============================= */
-.menu-footer {
-  border-top: 1px solid #1e293b;
-  padding: 10px 12px 14px;
-  background: #0b1224;
-}
-
-/* ============================= */
-/* LOGOUT BUTTON */
-/* ============================= */
+/* logout button only (footer) */
 .menu-footer ion-button {
   --background: transparent;
   --color: #f8fafc;
@@ -119,7 +159,7 @@ ion-menu ion-item.active-link {
   --border-style: solid;
 
   height: 44px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.2px;
 }
 

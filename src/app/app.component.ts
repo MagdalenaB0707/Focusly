@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import {
   IonApp, IonButton, IonContent, IonFooter, IonHeader, IonItem, IonLabel,
-  IonList, IonMenu, IonMenuToggle, IonRouterOutlet, IonTitle, IonToolbar,
+  IonList, IonMenu, IonMenuToggle, IonRouterOutlet, IonTitle, IonToolbar, IonIcon, IonButtons
 } from '@ionic/angular/standalone';
 
 import { AuthService } from './services/auth/auth.services';
@@ -11,12 +11,12 @@ import { AuthService } from './services/auth/auth.services';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  styleUrl: 'app.component.scss',
+  styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
     IonApp, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList,
     IonItem, IonLabel, IonMenuToggle, IonRouterOutlet, IonFooter, IonButton,
-    RouterLink,
+    RouterLink, IonIcon, IonButtons
   ],
 })
 export class AppComponent implements OnDestroy {

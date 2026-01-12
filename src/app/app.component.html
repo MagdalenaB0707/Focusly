@@ -1,11 +1,26 @@
 <ion-app>
   <ion-menu contentId="main-content" type="overlay">
     <ion-header>
-      <ion-toolbar>
+  <ion-toolbar>
+    <ion-title>
+      <div class="menu-header">
+        <img src="assets/icon/logo.png" class="menu-logo" />
+        <span>Focusly</span>
+      </div>
+    </ion-title>
 
-        <ion-title>Focusly</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <ion-buttons slot="end">
+      <ion-menu-toggle auto-hide="false">
+        <ion-button fill="clear" class="menu-close-btn" aria-label="Close menu">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+
 
     <ion-content class="ion-padding">
       <ion-list>
@@ -17,31 +32,31 @@
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="true">
-          <ion-item routerLink="/study-sessions">
+          <ion-item routerLink="/study-sessions" routerLinkActive="active-link">
             <ion-label>Study Sessions</ion-label>
           </ion-item>
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="true">
-          <ion-item routerLink="/courses">
+          <ion-item routerLink="/courses" routerLinkActive="active-link">
             <ion-label>Courses</ion-label>
           </ion-item>
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="true">
-          <ion-item routerLink="/activities">
+          <ion-item routerLink="/activities" routerLinkActive="active-link">
             <ion-label>Activities</ion-label>
           </ion-item>
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="true">
-          <ion-item routerLink="/goals">
+          <ion-item routerLink="/goals" routerLinkActive="active-link">
             <ion-label>Goals</ion-label>
           </ion-item>
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="true">
-          <ion-item routerLink="/data-room">
+          <ion-item routerLink="/data-room" routerLinkActive="active-link">
             <ion-label>Data Room</ion-label>
           </ion-item>
         </ion-menu-toggle>
