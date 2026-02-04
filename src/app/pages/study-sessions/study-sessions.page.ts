@@ -24,7 +24,11 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { Course } from 'src/app/models/course.model';
 import { Activity } from 'src/app/models/activity.model';
-import { StudySession, StudySessionDTO, SessionTargetType } from 'src/app/models/study-session.model';
+import {
+  StudySession,
+  StudySessionDTO,
+  SessionTargetType,
+} from 'src/app/models/study-session.model';
 
 import { CoursesService } from 'src/app/services/courses/courses.service';
 import { ActivitiesService } from 'src/app/services/activities/activities.services';
@@ -33,7 +37,7 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
 @Component({
   selector: 'app-study-sessions',
   templateUrl: './study-sessions.page.html',
-  styleUrl: './study-sessions.page.scss',
+  styleUrls: ['./study-sessions.page.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -86,7 +90,7 @@ export class StudySessionsPage implements OnInit, OnDestroy {
   constructor(
     private coursesService: CoursesService,
     private activitiesService: ActivitiesService,
-    private studySessionsService: StudySessionsService
+    private studySessionsService: StudySessionsService,
   ) {}
 
   ngOnInit() {
@@ -105,34 +109,43 @@ export class StudySessionsPage implements OnInit, OnDestroy {
   }
 
   loadCourses() {
-    this.coursesService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data) => (this.courses = data),
-      error: (e) => console.error('Courses load failed', e),
-    });
+    this.coursesService
+      .getAll()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => (this.courses = data),
+        error: (e) => console.error('Courses load failed', e),
+      });
   }
 
   loadActivities() {
-    this.activitiesService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data) => (this.activities = data),
-      error: (e) => console.error('Activities load failed', e),
-    });
+    this.activitiesService
+      .getAll()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => (this.activities = data),
+        error: (e) => console.error('Activities load failed', e),
+      });
   }
 
   loadSessions() {
     this.loading = true;
     this.uiError = null;
 
-    this.studySessionsService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data) => {
-        this.sessions = [...data].sort((a, b) => b.startedAt - a.startedAt);
-        this.loading = false;
-      },
-      error: (e) => {
-        console.error(e);
-        this.uiError = 'Failed to load sessions.';
-        this.loading = false;
-      },
-    });
+    this.studySessionsService
+      .getAll()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.sessions = [...data].sort((a, b) => b.startedAt - a.startedAt);
+          this.loading = false;
+        },
+        error: (e) => {
+          console.error(e);
+          this.uiError = 'Failed to load sessions.';
+          this.loading = false;
+        },
+      });
   }
 
   createSession() {
@@ -200,7 +213,9 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     if (s.targetType === 'course') {
       return this.courses.find((c) => c.id === s.targetId)?.title ?? s.targetId;
     }
-    return this.activities.find((a) => a.id === s.targetId)?.title ?? s.targetId;
+    return (
+      this.activities.find((a) => a.id === s.targetId)?.title ?? s.targetId
+    );
   }
 
   formatDateTime(ms: number): string {
@@ -251,7 +266,9 @@ export class StudySessionsPage implements OnInit, OnDestroy {
 
     this.studySessionsService.update(id, patch).subscribe({
       next: () => {
-        this.sessions = this.sessions.map((s) => (s.id === id ? { ...s, ...patch } : s));
+        this.sessions = this.sessions.map((s) =>
+          s.id === id ? { ...s, ...patch } : s,
+        );
         this.savingId = null;
         this.editingId = null;
         this.editForm = { durationMinutes: null, notes: '' };
@@ -264,7 +281,13 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     });
   }
 
-  trackByCourseId(_: number, c: Course) { return c.id; }
-  trackByActivityId(_: number, a: Activity) { return a.id; }
-  trackBySessionId(_: number, s: StudySession) { return s.id; }
+  trackByCourseId(_: number, c: Course) {
+    return c.id;
+  }
+  trackByActivityId(_: number, a: Activity) {
+    return a.id;
+  }
+  trackBySessionId(_: number, s: StudySession) {
+    return s.id;
+  }
 }

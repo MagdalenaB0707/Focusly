@@ -1,2 +1,39 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
+:root {
+  /* Base background / text */
+  --app-bg: #0f1115;
+  --app-surface: #151822;
+  --app-surface-2: #1b2030;
+  --app-border: rgba(255, 255, 255, 0.08);
+  --app-text: rgba(255, 255, 255, 0.92);
+  --app-text-muted: rgba(255, 255, 255, 0.65);
+
+  /* Accent panels (različite boje kontejnera) */
+  --panel-blue: rgba(59, 130, 246, 0.18);
+  --panel-purple: rgba(168, 85, 247, 0.18);
+  --panel-green: rgba(34, 197, 94, 0.18);
+  --panel-orange: rgba(249, 115, 22, 0.18);
+  --panel-pink: rgba(236, 72, 153, 0.18);
+
+  /* Ionic overrides */
+  --ion-background-color: var(--app-bg);
+  --ion-text-color: var(--app-text);
+
+  --ion-item-background: var(--app-surface);
+  --ion-card-background: var(--app-surface);
+
+  /* toolbar/header */
+  --ion-toolbar-background: rgba(21, 24, 34, 0.92);
+  --ion-toolbar-color: var(--app-text);
+
+  /* menu (sivo) */
+  --menu-bg: #2a2f3a;
+  --menu-item-bg: rgba(255, 255, 255, 0.06);
+  --menu-item-bg-hover: rgba(255, 255, 255, 0.10);
+
+  /* primary button color (možeš menjati) */
+  --ion-color-primary: #7c5cff;
+  --ion-color-primary-rgb: 124, 92, 255;
+  --ion-color-primary-contrast: #ffffff;
+}

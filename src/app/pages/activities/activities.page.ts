@@ -51,7 +51,6 @@ import { ActivitiesService } from 'src/app/services/activities/activities.servic
 })
 export class ActivitiesPage implements OnInit, OnDestroy {
   activities: Activity[] = [];
-
   loading = false;
   saving = false;
   deletingId: string | null = null;
@@ -119,7 +118,7 @@ export class ActivitiesPage implements OnInit, OnDestroy {
           this.activities = this.activities.map((x) =>
             x.id === a.id
               ? { ...x, title, description: description || undefined }
-              : x
+              : x,
           );
 
           this.updating = false;

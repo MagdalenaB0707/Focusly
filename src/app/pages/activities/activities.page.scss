@@ -1,168 +1,118 @@
 :host {
-  --bg: #0f172a;
-  --toolbar: #020617;
-
-  --card: #1e293b;
-  --card-border: #334155;
-
-  --text: #f8fafc;
-  --muted: #94a3b8;
-
-  --accent: #38bdf8;
-  --danger: #ef4444;
+  --bg: #0e0f12;
+  --border: rgba(255, 255, 255, 0.10);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.65);
+  --accent: #9b5cff;
 }
 
-/* Page background */
 ion-content {
   --background: var(--bg);
 }
 
-/* Header */
-ion-header ion-toolbar {
-  --background: var(--toolbar);
-  --color: var(--text);
-  border-bottom: 1px solid #1e293b;
+.page-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.43fr; /* ~70% / 30% */
+  gap: 16px;
+  align-items: start;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-ion-title {
+/* panels */
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+  backdrop-filter: blur(10px);
+}
+
+.panel--dark {
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+}
+
+.panel--accent {
+  background: linear-gradient(180deg, rgba(155, 92, 255, 0.18), rgba(255, 255, 255, 0.03));
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
   color: var(--text);
-  font-weight: 600;
 }
 
-/* ========== Form area (inputs) ========== */
-ion-item {
-  --background: var(--card);
-  --color: var(--text);
-  border: 1px solid var(--card-border);
-  border-radius: 16px;
-  margin: 10px 0;
-  overflow: hidden;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
-}
-
-/* Better padding inside ion-item */
-ion-item::part(native) {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-/* Input/textarea colors */
-ion-input,
-ion-textarea {
-  --color: var(--text);
-  --placeholder-color: rgba(148, 163, 184, 0.8);
-}
-
-/* label stacked text */
-ion-input::part(label),
-ion-textarea::part(label) {
+.panel-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 13px;
   color: var(--muted);
-  font-weight: 600;
-  margin-bottom: 6px;
 }
 
-/* Focus ring */
-ion-item.item-has-focus {
-  border-color: rgba(56, 189, 248, 0.9);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15),
-    0 10px 22px rgba(0, 0, 0, 0.25);
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+  opacity: 0.7;
 }
 
-/* Add activity button */
+.center {
+  display: flex;
+  justify-content: center;
+  padding: 14px 0;
+}
+
+.hint {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 10px 2px;
+}
+
+.note-error {
+  display: block;
+  margin-top: 10px;
+}
+
+ion-item {
+  --background: rgba(0, 0, 0, 0.22);
+  --border-color: rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+ion-item::part(native) { border-radius: 14px; }
+
+ion-input, ion-textarea {
+  --color: var(--text);
+  --placeholder-color: rgba(255,255,255,0.45);
+}
+
 ion-button {
   --border-radius: 14px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  height: 44px;
+  text-transform: none;
+  font-weight: 800;
 }
 
-/* Primary button style */
-ion-button[expand="block"] {
-  --background: rgba(56, 189, 248, 0.18);
-  --color: var(--text);
-  --border-color: rgba(56, 189, 248, 0.7);
-  --border-width: 1px;
-  --border-style: solid;
+.btn-accent {
+  --background: var(--accent);
+  --color: #0b0b0d;
 }
 
-ion-button[expand="block"]:hover {
-  --border-color: rgba(56, 189, 248, 1);
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-/* Error note */
-ion-note[color="danger"] {
-  color: var(--danger);
-  font-weight: 600;
-}
-
-/* Divider */
-hr {
-  border: none;
-  height: 1px;
-  background: rgba(148, 163, 184, 0.18);
-  margin: 16px 0 !important;
-}
-
-/* ========== List container ========== */
-ion-list {
-  background: transparent;
-  padding: 0;
-}
-
-/* Each activity row should look like a card */
-ion-list > ion-item {
-  --background: var(--card);
-  border: 1px solid rgba(51, 65, 85, 0.8);
-  border-radius: 18px;
-  margin: 12px 0;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
-}
-
-/* Title + description */
-ion-list > ion-item ion-label h2 {
-  color: var(--text);
-  font-weight: 700;
-  margin: 0;
-}
-
-ion-list > ion-item ion-label p {
-  color: var(--muted);
-  margin-top: 6px;
-  font-size: 13px;
-}
-
-/* Right side action buttons (Edit/Delete) */
-ion-list > ion-item ion-button[fill="clear"] {
-  --color: var(--muted);
-  font-weight: 700;
-}
-
-ion-list > ion-item ion-button[color="danger"] {
-  --color: var(--danger);
-}
-
-/* Small buttons inside edit mode */
-ion-button[size="small"] {
-  height: 34px;
-  --border-radius: 12px;
-  font-weight: 700;
-}
-
-/* Outline small button */
-ion-button[fill="outline"] {
-  --border-color: rgba(148, 163, 184, 0.6);
-  --color: var(--text);
-}
-
-/* Edit mode nested ion-items should be simpler (no shadow stacking) */
-ion-label ion-item {
-  --background: transparent;
-  border: 1px solid rgba(51, 65, 85, 0.6);
-  box-shadow: none;
-  margin: 10px 0;
-}
-
-/* Spinner centering already ok, just ensure visibility */
-ion-spinner {
-  color: var(--accent);
+/* responsive */
+@media (max-width: 900px) {
+  .page-grid {
+    grid-template-columns: 1fr;
+  }
 }

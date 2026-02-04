@@ -8,184 +8,183 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Target Type -->
-  <ion-item>
-    <ion-select
-      label="Type"
-      labelPlacement="stacked"
-      [(ngModel)]="form.targetType"
-      (ionChange)="onTargetTypeChange()"
-    >
-      <ion-select-option value="course">Course</ion-select-option>
-      <ion-select-option value="activity">Activity</ion-select-option>
-    </ion-select>
-  </ion-item>
+  <div class="page-grid">
 
-  <!-- Target dropdown -->
-  <ion-item>
-    <ion-select
-      label="Target"
-      labelPlacement="stacked"
-      placeholder="Select..."
-      [(ngModel)]="form.targetId"
-    >
-      <!-- Courses -->
-      <ion-select-option
-        *ngFor="let c of courses; trackBy: trackByCourseId"
-        [value]="c.id"
-        [disabled]="form.targetType !== 'course'"
-      >
-        {{ c.title }}
-      </ion-select-option>
+    <!-- LEFT: LIST -->
+    <section class="panel panel--dark">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Sessions</h2>
+          <p class="panel-subtitle">Newest first</p>
+        </div>
+      </div>
 
-      <!-- Activities -->
-      <ion-select-option
-        *ngFor="let a of activities; trackBy: trackByActivityId"
-        [value]="a.id"
-        [disabled]="form.targetType !== 'activity'"
-      >
-        {{ a.title }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
+      <div class="divider"></div>
 
-  <!-- Datetime -->
-  <ion-item>
-    <ion-datetime
-      presentation="date-time"
-      [firstDayOfWeek]="1"
-      [(ngModel)]="form.startedAtIso"
-    ></ion-datetime>
-  </ion-item>
+      <div *ngIf="loading" class="center">
+        <ion-spinner></ion-spinner>
+      </div>
 
-  <!-- Duration -->
-  <ion-item>
-    <ion-input
-      label="Duration (minutes)"
-      labelPlacement="stacked"
-      type="number"
-      [(ngModel)]="form.durationMinutes"
-      placeholder="e.g. 45"
-    ></ion-input>
-  </ion-item>
+      <ion-note *ngIf="!loading && sessions.length === 0" class="hint">
+        No sessions yet.
+      </ion-note>
 
-  <!-- Notes -->
-  <ion-item>
-    <ion-textarea
-      label="Notes"
-      labelPlacement="stacked"
-      [(ngModel)]="form.notes"
-      placeholder="Optional..."
-      autoGrow="true"
-    ></ion-textarea>
-  </ion-item>
+      <ion-list *ngIf="!loading && sessions.length > 0">
+        <div *ngFor="let s of sessions; trackBy: trackBySessionId">
+          <ion-item lines="full">
+            <ion-label>
+              <h2>{{ formatDateTime(s.startedAt) }} — {{ s.durationMinutes }} min</h2>
+              <p>{{ s.targetType }}: {{ targetLabel(s) }}</p>
+              <p *ngIf="s.notes">{{ s.notes }}</p>
+            </ion-label>
 
-  <ion-button expand="block" (click)="createSession()" [disabled]="saving">
-    {{ saving ? 'Saving...' : 'Add session' }}
-  </ion-button>
+            <ion-button
+              slot="end"
+              fill="clear"
+              (click)="startEdit(s)"
+              *ngIf="editingId !== s.id"
+            >
+              Edit
+            </ion-button>
 
-  <ion-note
-    color="danger"
-    *ngIf="uiError"
-    style="display: block; margin-top: 10px"
-  >
-    {{ uiError }}
-  </ion-note>
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="danger"
+              (click)="deleteSession(s.id)"
+              [disabled]="deletingId === s.id || savingId === s.id"
+              *ngIf="editingId !== s.id"
+            >
+              {{ deletingId === s.id ? '...' : 'Delete' }}
+            </ion-button>
+          </ion-item>
 
-  <hr style="margin: 16px 0; opacity: 0.2" />
+          <!-- INLINE EDIT PANEL -->
+          <div *ngIf="editingId === s.id" class="inline-edit">
+            <ion-item>
+              <ion-input
+                label="Duration (minutes)"
+                labelPlacement="stacked"
+                type="number"
+                [(ngModel)]="editForm.durationMinutes"
+              ></ion-input>
+            </ion-item>
 
-  <!-- List -->
-  <div
-    *ngIf="loading"
-    style="display: flex; justify-content: center; padding: 16px 0"
-  >
-    <ion-spinner></ion-spinner>
-  </div>
+            <ion-item>
+              <ion-textarea
+                label="Notes"
+                labelPlacement="stacked"
+                [(ngModel)]="editForm.notes"
+                autoGrow="true"
+              ></ion-textarea>
+            </ion-item>
 
-  <ion-note *ngIf="!loading && sessions.length === 0" style="display: block">
-    No sessions yet.
-  </ion-note>
+            <div class="actions">
+              <ion-button expand="block" (click)="saveEdit()" [disabled]="savingId === s.id">
+                {{ savingId === s.id ? 'Saving...' : 'Save' }}
+              </ion-button>
 
-  <ion-list *ngIf="!loading && sessions.length > 0">
-    <div *ngFor="let s of sessions; trackBy: trackBySessionId">
-      <ion-item lines="full">
-        <ion-label>
-          <h2>
-            {{ formatDateTime(s.startedAt) }} — {{ s.durationMinutes }} min
-          </h2>
-          <p>{{ s.targetType }}: {{ targetLabel(s) }}</p>
-          <p *ngIf="s.notes">{{ s.notes }}</p>
-        </ion-label>
+              <ion-button expand="block" fill="outline" (click)="cancelEdit()" [disabled]="savingId === s.id">
+                Cancel
+              </ion-button>
+            </div>
 
-        <ion-button
-          slot="end"
-          fill="clear"
-          (click)="startEdit(s)"
-          *ngIf="editingId !== s.id"
+            <ion-note color="danger" *ngIf="uiError" class="note-error">
+              {{ uiError }}
+            </ion-note>
+          </div>
+        </div>
+      </ion-list>
+
+      <ion-note color="danger" *ngIf="uiError" class="note-error">
+        {{ uiError }}
+      </ion-note>
+    </section>
+
+    <!-- RIGHT: CREATE -->
+    <aside class="panel panel--accent">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Create session</h2>
+          <p class="panel-subtitle">Pick target + time + duration</p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <ion-item>
+        <ion-select
+          label="Type"
+          labelPlacement="stacked"
+          [(ngModel)]="form.targetType"
+          (ionChange)="onTargetTypeChange()"
         >
-          Edit
-        </ion-button>
-
-        <ion-button
-          slot="end"
-          fill="clear"
-          color="danger"
-          (click)="deleteSession(s.id)"
-          [disabled]="deletingId === s.id || savingId === s.id"
-          *ngIf="editingId !== s.id"
-        >
-          {{ deletingId === s.id ? '...' : 'Delete' }}
-        </ion-button>
+          <ion-select-option value="course">Course</ion-select-option>
+          <ion-select-option value="activity">Activity</ion-select-option>
+        </ion-select>
       </ion-item>
 
-      <!-- INLINE EDIT PANEL -->
-      <div *ngIf="editingId === s.id" class="edit-panel">
-
-        <ion-item>
-          <ion-input
-            label="Duration (minutes)"
-            labelPlacement="stacked"
-            type="number"
-            [(ngModel)]="editForm.durationMinutes"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-textarea
-            label="Notes"
-            labelPlacement="stacked"
-            [(ngModel)]="editForm.notes"
-            autoGrow="true"
-          ></ion-textarea>
-        </ion-item>
-
-        <div style="display: flex; gap: 10px; margin-top: 10px">
-          <ion-button
-            expand="block"
-            (click)="saveEdit()"
-            [disabled]="savingId === s.id"
-          >
-            {{ savingId === s.id ? 'Saving...' : 'Save' }}
-          </ion-button>
-
-          <ion-button
-            expand="block"
-            fill="outline"
-            (click)="cancelEdit()"
-            [disabled]="savingId === s.id"
-          >
-            Cancel
-          </ion-button>
-        </div>
-
-        <ion-note
-          color="danger"
-          *ngIf="uiError"
-          style="display: block; margin-top: 8px"
+      <ion-item>
+        <ion-select
+          label="Target"
+          labelPlacement="stacked"
+          placeholder="Select..."
+          [(ngModel)]="form.targetId"
         >
-          {{ uiError }}
-        </ion-note>
-      </div>
-    </div>
-  </ion-list>
+          <ion-select-option
+            *ngFor="let c of courses; trackBy: trackByCourseId"
+            [value]="c.id"
+            [disabled]="form.targetType !== 'course'"
+          >
+            {{ c.title }}
+          </ion-select-option>
+
+          <ion-select-option
+            *ngFor="let a of activities; trackBy: trackByActivityId"
+            [value]="a.id"
+            [disabled]="form.targetType !== 'activity'"
+          >
+            {{ a.title }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-datetime
+          presentation="date-time"
+          [firstDayOfWeek]="1"
+          [(ngModel)]="form.startedAtIso"
+        ></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="Duration (minutes)"
+          labelPlacement="stacked"
+          type="number"
+          [(ngModel)]="form.durationMinutes"
+          placeholder="e.g. 45"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-textarea
+          label="Notes"
+          labelPlacement="stacked"
+          [(ngModel)]="form.notes"
+          placeholder="Optional..."
+          autoGrow="true"
+        ></ion-textarea>
+      </ion-item>
+
+      <ion-button expand="block" (click)="createSession()" [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save session' }}
+      </ion-button>
+
+      <ion-note color="danger" *ngIf="uiError" class="note-error">
+        {{ uiError }}
+      </ion-note>
+    </aside>
+
+  </div>
 </ion-content>

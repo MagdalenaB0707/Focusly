@@ -239,7 +239,7 @@ export class CoursesPage implements OnInit, OnDestroy {
         this.uiError = 'Delete failed.';
         this.deletingId = null;
       },
-    });
+    })
   }
 
   trackByCourseId(_: number, c: Course) {

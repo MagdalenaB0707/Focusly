@@ -8,133 +8,151 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <div class="page-grid">
 
-  <!-- Add form -->
-  <ion-item>
-    <ion-input
-      label="Title"
-      labelPlacement="stacked"
-      placeholder="e.g. Databases, Web Programming..."
-      [(ngModel)]="form.title"
-    ></ion-input>
-  </ion-item>
+    <!-- LEFT: LIST -->
+    <section class="panel panel--dark">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Your courses</h2>
+          <p class="panel-subtitle">Edit / delete anytime</p>
+        </div>
+      </div>
 
-  <ion-item>
-    <ion-textarea
-      label="Description (optional)"
-      labelPlacement="stacked"
-      placeholder="Short note..."
-      autoGrow="true"
-      [(ngModel)]="form.description"
-    ></ion-textarea>
-  </ion-item>
+      <div class="divider"></div>
 
-  <ion-item>
-    <ion-input
-      label="Estimated time (minutes, optional)"
-      labelPlacement="stacked"
-      type="number"
-      placeholder="e.g. 90"
-      [(ngModel)]="form.estimatedTime"
-    ></ion-input>
-  </ion-item>
+      <div *ngIf="loading" class="center">
+        <ion-spinner></ion-spinner>
+      </div>
 
-  <ion-button expand="block" (click)="createCourse()" [disabled]="saving">
-    {{ saving ? 'Saving...' : 'Add course' }}
-  </ion-button>
+      <ion-note *ngIf="!loading && !uiError && courses.length === 0" class="hint">
+        No courses yet.
+      </ion-note>
 
-  <ion-note color="danger" *ngIf="uiError" style="display:block; margin-top:10px;">
-    {{ uiError }}
-  </ion-note>
+      <ion-list *ngIf="!loading && !uiError && courses.length > 0">
+        <ion-item *ngFor="let c of courses; trackBy: trackByCourseId" lines="full">
+          <ion-label>
 
-  <hr style="margin: 16px 0; opacity: 0.2;" />
+            <ng-container *ngIf="editingId !== c.id; else editTpl">
+              <h2>{{ c.title }}</h2>
+              <p *ngIf="c.description">{{ c.description }}</p>
+              <p *ngIf="c.estimatedTime != null">Estimated: {{ c.estimatedTime }} min</p>
+            </ng-container>
 
-  <!-- Loading -->
-  <div *ngIf="loading" style="display:flex; justify-content:center; padding: 16px 0;">
-    <ion-spinner></ion-spinner>
+            <ng-template #editTpl>
+              <ion-item lines="none">
+                <ion-input
+                  label="Title"
+                  labelPlacement="stacked"
+                  [(ngModel)]="editForm.title"
+                ></ion-input>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-textarea
+                  label="Description"
+                  labelPlacement="stacked"
+                  autoGrow="true"
+                  [(ngModel)]="editForm.description"
+                ></ion-textarea>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-input
+                  label="Estimated time (minutes)"
+                  labelPlacement="stacked"
+                  type="number"
+                  [(ngModel)]="editForm.estimatedTime"
+                ></ion-input>
+              </ion-item>
+
+              <div class="actions">
+                <ion-button size="small" (click)="saveEdit(c)" [disabled]="updating">
+                  {{ updating ? 'Saving...' : 'Save' }}
+                </ion-button>
+
+                <ion-button size="small" fill="outline" (click)="cancelEdit()" [disabled]="updating">
+                  Cancel
+                </ion-button>
+              </div>
+            </ng-template>
+
+          </ion-label>
+
+          <ion-button
+            slot="end"
+            fill="clear"
+            (click)="startEdit(c)"
+            [disabled]="editingId === c.id || deletingId === c.id"
+          >
+            Edit
+          </ion-button>
+
+          <ion-button
+            slot="end"
+            fill="clear"
+            color="danger"
+            (click)="deleteCourse(c.id)"
+            [disabled]="deletingId === c.id || editingId === c.id"
+          >
+            {{ deletingId === c.id ? '...' : 'Delete' }}
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ion-note color="danger" *ngIf="uiError" class="note-error">
+        {{ uiError }}
+      </ion-note>
+    </section>
+
+    <!-- RIGHT: CREATE -->
+    <aside class="panel panel--accent">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Create course</h2>
+          <p class="panel-subtitle">Add a new course</p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <ion-item>
+        <ion-input
+          label="Title"
+          labelPlacement="stacked"
+          placeholder="e.g. Databases, Web Programming..."
+          [(ngModel)]="form.title"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-textarea
+          label="Description (optional)"
+          labelPlacement="stacked"
+          placeholder="Short note..."
+          autoGrow="true"
+          [(ngModel)]="form.description"
+        ></ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="Estimated time (minutes, optional)"
+          labelPlacement="stacked"
+          type="number"
+          placeholder="e.g. 90"
+          [(ngModel)]="form.estimatedTime"
+        ></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" (click)="createCourse()" [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save course' }}
+      </ion-button>
+
+      <ion-note color="danger" *ngIf="uiError" class="note-error">
+        {{ uiError }}
+      </ion-note>
+    </aside>
+
   </div>
-
-  <!-- Empty -->
-  <ion-note *ngIf="!loading && !uiError && courses.length === 0" style="display:block;">
-    No courses yet.
-  </ion-note>
-
-  <!-- List -->
-  <ion-list *ngIf="!loading && !uiError && courses.length > 0">
-
-    <ion-item *ngFor="let c of courses; trackBy: trackByCourseId" lines="full">
-      <ion-label>
-
-        <!-- Normal view -->
-        <ng-container *ngIf="editingId !== c.id; else editTpl">
-          <h2>{{ c.title }}</h2>
-          <p *ngIf="c.description">{{ c.description }}</p>
-          <p *ngIf="c.estimatedTime != null">Estimated: {{ c.estimatedTime }} min</p>
-        </ng-container>
-
-        <!-- Edit view -->
-        <ng-template #editTpl>
-          <ion-item lines="none">
-            <ion-input
-              label="Title"
-              labelPlacement="stacked"
-              [(ngModel)]="editForm.title"
-            ></ion-input>
-          </ion-item>
-
-          <ion-item lines="none">
-            <ion-textarea
-              label="Description"
-              labelPlacement="stacked"
-              autoGrow="true"
-              [(ngModel)]="editForm.description"
-            ></ion-textarea>
-          </ion-item>
-
-          <ion-item lines="none">
-            <ion-input
-              label="Estimated time (minutes)"
-              labelPlacement="stacked"
-              type="number"
-              [(ngModel)]="editForm.estimatedTime"
-            ></ion-input>
-          </ion-item>
-
-          <div style="display:flex; gap:8px; margin-top:8px;">
-            <ion-button size="small" (click)="saveEdit(c)" [disabled]="updating">
-              {{ updating ? 'Saving...' : 'Save' }}
-            </ion-button>
-
-            <ion-button size="small" fill="outline" (click)="cancelEdit()" [disabled]="updating">
-              Cancel
-            </ion-button>
-          </div>
-        </ng-template>
-
-      </ion-label>
-
-      <!-- Right buttons -->
-      <ion-button
-        slot="end"
-        fill="clear"
-        (click)="startEdit(c)"
-        [disabled]="editingId === c.id || deletingId === c.id"
-      >
-        Edit
-      </ion-button>
-
-      <ion-button
-        slot="end"
-        fill="clear"
-        color="danger"
-        (click)="deleteCourse(c.id)"
-        [disabled]="deletingId === c.id || editingId === c.id"
-      >
-        {{ deletingId === c.id ? '...' : 'Delete' }}
-      </ion-button>
-
-    </ion-item>
-
-  </ion-list>
-
 </ion-content>
