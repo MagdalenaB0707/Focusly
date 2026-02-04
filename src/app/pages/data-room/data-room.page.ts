@@ -33,7 +33,7 @@ type ColDim = 'months' | 'weeks';
 type PivotRow = {
   id: string;
   label: string;
-  values: number[]; // po kolonama
+  values: number[]; 
   total: number;
 };
 
@@ -67,20 +67,17 @@ export class DataRoomPage implements OnInit, OnDestroy {
   loading = false;
   errorMsg: string | null = null;
 
-  // data
   sessions: StudySession[] = [];
   courses: Course[] = [];
   activities: Activity[] = [];
 
-  // controls
   metric: Metric = 'minutes';        // Sessions | Minutes
   rowDim: RowDim = 'courses';        // Courses | Activities
   colDim: ColDim = 'months';         // Months | Calendar Weeks
   year = new Date().getFullYear();   // za months/weeks
 
-  // pivot output
-  colKeys: string[] = [];            // npr ["2026-01", "2026-02"...] ili ["2026-W01"...]
-  colLabels: string[] = [];          // npr ["Jan 26", ...] ili ["W01", ...]
+  colKeys: string[] = [];           
+  colLabels: string[] = [];        
   rows: PivotRow[] = [];
   colTotals: number[] = [];
   grandTotal = 0;
@@ -110,7 +107,6 @@ export class DataRoomPage implements OnInit, OnDestroy {
     this.loading = true;
     this.errorMsg = null;
 
-    // učitaj courses -> activities -> sessions (da label mape rade)
     this.coursesService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
       next: (courses) => {
         this.courses = courses;
@@ -147,10 +143,8 @@ export class DataRoomPage implements OnInit, OnDestroy {
     });
   }
 
-  // ---------- PIVOT ----------
 
   private recomputePivot() {
-    // 1) pripremi kolone
     const cols = this.colDim === 'months'
       ? this.buildMonthColumns(this.year)
       : this.buildWeekColumns(this.year);
@@ -158,7 +152,6 @@ export class DataRoomPage implements OnInit, OnDestroy {
     this.colKeys = cols.map((c) => c.key);
     this.colLabels = cols.map((c) => c.label);
 
-    // 2) filtriraj sessions na row dim (courses/activities) + year
     const wantedTargetType = this.rowDim === 'courses' ? 'course' : 'activity';
 
     const filtered = this.sessions.filter((s) => {
@@ -167,8 +160,7 @@ export class DataRoomPage implements OnInit, OnDestroy {
       return d.getFullYear() === this.year;
     });
 
-    // 3) grupisanje po targetId (row)
-    const byRow = new Map<string, number[]>(); // rowId -> values[cols]
+    const byRow = new Map<string, number[]>(); 
 
     for (const s of filtered) {
       const colIndex = this.findColIndex(s.startedAt);
@@ -183,7 +175,6 @@ export class DataRoomPage implements OnInit, OnDestroy {
       arr[colIndex] += add;
     }
 
-    // 4) formiraj rows sa labelama
     const pivotRows: PivotRow[] = Array.from(byRow.entries()).map(([id, values]) => {
       const total = values.reduce((sum, v) => sum + v, 0);
       return {
@@ -194,10 +185,8 @@ export class DataRoomPage implements OnInit, OnDestroy {
       };
     });
 
-    // sortiraj (najveći total prvo)
     pivotRows.sort((a, b) => b.total - a.total);
 
-    // 5) totals
     const colTotals = new Array(this.colKeys.length).fill(0);
     for (const r of pivotRows) {
       r.values.forEach((v, i) => (colTotals[i] += v));
@@ -216,7 +205,6 @@ export class DataRoomPage implements OnInit, OnDestroy {
     return this.activities.find((a) => a.id === targetId)?.title ?? targetId;
   }
 
-  // ---------- Columns helpers ----------
 
   private buildMonthColumns(year: number): { key: string; label: string }[] {
     const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -232,7 +220,6 @@ export class DataRoomPage implements OnInit, OnDestroy {
   }
 
   private buildWeekColumns(year: number): { key: string; label: string }[] {
-    // ISO weeks: uzmi sve ponedeljke u godini i pravi kolone W01..W53
     const weeks: { key: string; label: string }[] = [];
     const maxWeeks = 53;
 
@@ -252,14 +239,12 @@ export class DataRoomPage implements OnInit, OnDestroy {
       return this.colKeys.indexOf(key);
     }
 
-    // weeks (ISO)
     const iso = this.isoWeek(d);
     const key = `${iso.year}-W${String(iso.week).padStart(2, '0')}`;
     return this.colKeys.indexOf(key);
   }
 
   private isoWeek(date: Date): { year: number; week: number } {
-    // ISO week algorithm (Monday start)
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
     const dayNum = d.getUTCDay() || 7;
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
@@ -268,12 +253,10 @@ export class DataRoomPage implements OnInit, OnDestroy {
     return { year: d.getUTCFullYear(), week };
   }
 
-  // template helpers
   trackByRowId(_: number, r: PivotRow) { return r.id; }
   trackByIdx(i: number) { return i; }
 
   formatCell(v: number): string {
-    // za minutes: prikaz u "xh ym" može kasnije — za sad čist broj
-    return String(v);
+   return String(v);
   }
 }

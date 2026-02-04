@@ -69,16 +69,13 @@ export class GoalsPage implements OnInit, OnDestroy {
   deletingId: string | null = null;
   uiError: string | null = null;
 
-  form: {
-    targetType: GoalTargetType;
-    targetId: string;
-    period: GoalPeriod;
-    targetMinutes: number | null;
-  } = {
-    targetType: 'activity',
+  form = {
+    targetType: 'activity' as GoalTargetType,
     targetId: '',
-    period: 'weekly',
-    targetMinutes: null,
+    period: 'weekly' as GoalPeriod,
+
+    targetHours: 0,
+    targetMins: 0,
   };
 
   private destroy$ = new Subject<void>();
@@ -87,7 +84,7 @@ export class GoalsPage implements OnInit, OnDestroy {
     private activitiesService: ActivitiesService,
     private coursesService: CoursesService,
     private goalsService: GoalsService,
-    private studySessionsService: StudySessionsService  
+    private studySessionsService: StudySessionsService,
   ) {}
   sessions: StudySession[] = [];
 
@@ -115,7 +112,7 @@ export class GoalsPage implements OnInit, OnDestroy {
           s.targetType === g.targetType &&
           s.targetId === g.targetId &&
           s.startedAt >= from &&
-          s.startedAt < to
+          s.startedAt < to,
       )
       .reduce((sum, s) => sum + (s.durationMinutes || 0), 0);
 
@@ -140,7 +137,6 @@ export class GoalsPage implements OnInit, OnDestroy {
   }
 
   onTargetTypeChange() {
-    // kad promeni tip, resetuj target selection da user ne ostane na pogrešnom id-u
     this.form.targetId = '';
   }
 
@@ -183,7 +179,6 @@ export class GoalsPage implements OnInit, OnDestroy {
         },
       });
   }
-
   createGoal() {
     this.uiError = null;
 
@@ -191,19 +186,38 @@ export class GoalsPage implements OnInit, OnDestroy {
       this.uiError = 'Select a target (activity/course).';
       return;
     }
-    if (!this.form.targetMinutes || this.form.targetMinutes <= 0) {
-      this.uiError = 'Enter target minutes.';
+
+    const hours = Number(this.form.targetHours ?? 0);
+    const mins = Number(this.form.targetMins ?? 0);
+
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(mins) ||
+      hours < 0 ||
+      mins < 0 ||
+      mins > 59
+    ) {
+      this.uiError = 'Enter valid time (hours >= 0, minutes 0-59).';
+      return;
+    }
+
+    const targetMinutes = hours * 60 + mins;
+
+    if (targetMinutes <= 0) {
+      this.uiError = 'Enter target time.';
       return;
     }
 
     this.saving = true;
 
+    const period = 'weekly';
+
     this.goalsService
       .create({
         targetType: this.form.targetType,
         targetId: this.form.targetId,
-        period: this.form.period,
-        targetMinutes: this.form.targetMinutes,
+        period,
+        targetMinutes,
         createdAt: Date.now(),
       })
       .subscribe({
@@ -211,9 +225,9 @@ export class GoalsPage implements OnInit, OnDestroy {
           this.goals = [created, ...this.goals];
           this.saving = false;
 
-          // reset minimalno
           this.form.targetId = '';
-          this.form.targetMinutes = null;
+          this.form.targetHours = 0;
+          this.form.targetMins = 0;
         },
         error: (e) => {
           console.error(e);
@@ -259,79 +273,42 @@ export class GoalsPage implements OnInit, OnDestroy {
     return g.id;
   }
 
-  private getPeriodRange(period: 'daily' | 'weekly' | 'monthly'): {
-    from: number;
-    to: number;
-  } {
+  private getPeriodRange(_: GoalPeriod): { from: number; to: number } {
     const now = new Date();
 
-    if (period === 'daily') {
-      const from = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        0,
-        0,
-        0,
-        0
-      ).getTime();
-      const to = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,
-        0,
-        0,
-        0,
-        0
-      ).getTime();
-      return { from, to };
-    }
+    // Monday start
+    const day = now.getDay(); // 0=Sun
+    const diffToMonday = (day + 6) % 7;
 
-    if (period === 'weekly') {
-      // Monday start (EU)
-      const day = now.getDay(); // 0=Sun,1=Mon...
-      const diffToMonday = (day + 6) % 7; // Mon->0, Tue->1, Sun->6
-      const monday = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() - diffToMonday,
-        0,
-        0,
-        0,
-        0
-      );
-      const from = monday.getTime();
-      const to = new Date(
-        monday.getFullYear(),
-        monday.getMonth(),
-        monday.getDate() + 7,
-        0,
-        0,
-        0,
-        0
-      ).getTime();
-      return { from, to };
-    }
-
-    // monthly
-    const from = new Date(
+    const monday = new Date(
       now.getFullYear(),
       now.getMonth(),
-      1,
+      now.getDate() - diffToMonday,
       0,
       0,
       0,
-      0
-    ).getTime();
+      0,
+    );
+
+    const from = monday.getTime();
     const to = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      1,
+      monday.getFullYear(),
+      monday.getMonth(),
+      monday.getDate() + 7,
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
+
     return { from, to };
   }
+
+  formatMinutes(total: number): string {
+  const mins = Number(total || 0);
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${h}h ${m}m`;
+}
+
 }

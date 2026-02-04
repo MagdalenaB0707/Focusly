@@ -65,6 +65,12 @@ ion-button { --border-radius: 14px; text-transform: none; font-weight: 800; }
 
 .actions { display: flex; gap: 10px; margin-top: 10px; }
 
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 @media (max-width: 900px) {
   .page-grid { grid-template-columns: 1fr; }
 }

@@ -1,25 +1,17 @@
-/* =============================
-   FORCE DARK MENU (shadow DOM)
-   ============================= */
 ion-menu::part(container) {
   background: #0b1224 !important;
   border-right: 1px solid #1e293b;
 }
 
-/* menu content bg */
 ion-menu ion-content {
   --background: #0b1224 !important;
 }
 
-/* remove default list bg */
 ion-menu ion-list {
   background: transparent !important;
   padding-top: 6px;
 }
 
-/* =============================
-   MENU HEADER
-   ============================= */
 ion-menu ion-header ion-toolbar {
   --background: #020617 !important;
   --color: #f8fafc !important;
@@ -27,9 +19,8 @@ ion-menu ion-header ion-toolbar {
   --min-height: 56px;
 }
 
-/* title should not eat end slot */
 ion-menu ion-title {
-  padding-inline-end: 48px; /* leave room for X button */
+  padding-inline-end: 48px;
   font-weight: 800;
   letter-spacing: 0.3px;
 }
@@ -51,13 +42,11 @@ ion-menu ion-title {
   letter-spacing: 0.4px;
 }
 
-/* end slot button must be visible */
 ion-menu ion-buttons[slot="end"] {
   display: flex !important;
   align-items: center;
 }
 
-/* close button (ONLY this one) */
 .menu-close-btn {
   --color: #f8fafc;
   --padding-start: 6px;
@@ -69,69 +58,54 @@ ion-menu ion-buttons[slot="end"] {
   color: #f8fafc;
 }
 
-/* =============================
-   MENU LINKS (ONLY the nav list)
-   ============================= */
-
-/* target only items inside the list */
 ion-menu ion-content ion-list ion-item {
   --background: transparent !important;
   --color: #e2e8f0 !important;
 
-  margin: 8px 10px;
-  border-radius: 14px;
-
-  border: 1px solid rgba(51, 65, 85, 0.7);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
-
-  transition: transform 0.15s ease, border-color 0.15s ease,
-    background 0.15s ease;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
 
-/* compact padding */
 ion-menu ion-content ion-list ion-item::part(native) {
   padding-top: 10px;
   padding-bottom: 10px;
+  min-height: 44px;
 }
 
-/* label */
 ion-menu ion-content ion-list ion-label {
   font-weight: 650;
   font-size: 14px;
 }
 
-/* hover */
 ion-menu ion-content ion-list ion-item:hover {
   transform: translateY(-1px);
   border-color: rgba(56, 189, 248, 0.6);
 }
 
-/* active link */
 ion-menu ion-content ion-list ion-item.active-link {
   --background: rgba(56, 189, 248, 0.12) !important;
   border-color: rgba(56, 189, 248, 0.9);
 }
 
-/* =============================
-   FOOTER (email card + logout)
-   ============================= */
 .menu-footer {
   background: #0b1224;
   border-top: 1px solid #1e293b;
   padding: 10px 12px 14px;
 }
 
-/* email card */
 .user-email-item {
   --background: transparent !important;
-  border: 1px solid rgba(51, 65, 85, 0.7);
-  border-radius: 14px;
-  margin: 10px 0 12px 0; /* in footer already padded */
+  border: none;
+  border-radius: 0;
+  margin: 6px 0 8px 0;
 }
 
 .user-email-item::part(native) {
   padding-top: 10px;
   padding-bottom: 10px;
+  min-height: 40px;
 }
 
 .user-email-label {
@@ -149,11 +123,10 @@ ion-menu ion-content ion-list ion-item.active-link {
   word-break: break-word;
 }
 
-/* logout button only (footer) */
 .menu-footer ion-button {
   --background: transparent;
   --color: #f8fafc;
-  --border-color: rgba(148, 163, 184, 0.6);
+  --border-color: rgba(224, 15, 15, 0.447);
   --border-radius: 14px;
   --border-width: 1px;
   --border-style: solid;

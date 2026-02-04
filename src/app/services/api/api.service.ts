@@ -11,7 +11,7 @@ export class ApiService {
   constructor(private http: HttpClient, private auth: AuthService) {}
 
   private url(path: string): string {
-    const token = this.auth.token; // null ako nije ulogovan ili istekao
+    const token = this.auth.token; 
     const base = `${FIREBASE_DB_URL}/${path}.json`;
     return token ? `${base}?auth=${encodeURIComponent(token)}` : base;
   }

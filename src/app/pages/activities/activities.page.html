@@ -10,39 +10,33 @@
 <ion-content class="ion-padding">
   <div class="page-grid">
 
-    <!-- LEFT (70%): LIST -->
     <section class="panel panel--dark">
       <div class="panel-head">
         <div>
           <h2 class="panel-title">Your activities</h2>
-          <p class="panel-subtitle">Edit / delete anytime</p>
+          <p class="panel-subtitle">Edit / Delete anytime</p>
         </div>
       </div>
 
       <div class="divider"></div>
 
-      <!-- Loading -->
       <div *ngIf="loading" class="center">
         <ion-spinner></ion-spinner>
       </div>
 
-      <!-- Empty -->
       <ion-note *ngIf="!loading && !uiError && activities.length === 0" class="hint">
         No activities yet.
       </ion-note>
 
-      <!-- List -->
       <ion-list *ngIf="!loading && !uiError && activities.length > 0">
         <ion-item *ngFor="let a of activities; trackBy: trackByActivityId" lines="full">
           <ion-label>
 
-            <!-- Normal view -->
             <ng-container *ngIf="editingId !== a.id; else editTpl">
               <h2>{{ a.title }}</h2>
               <p *ngIf="a.description">{{ a.description }}</p>
             </ng-container>
 
-            <!-- Edit view -->
             <ng-template #editTpl>
               <ion-item lines="none">
                 <ion-input
@@ -96,15 +90,12 @@
       </ion-list>
     </section>
 
-    <!-- RIGHT (30%): CREATE -->
     <aside class="panel panel--accent">
       <div class="panel-head">
         <div>
-          <h2 class="panel-title">Create</h2>
+          <h2 class="panel-title">Create New Activity</h2>
           <p class="panel-subtitle">Add a new activity</p>
         </div>
-
-        
       </div>
 
       <div class="divider"></div>
@@ -138,9 +129,6 @@
         </ion-note>
       </div>
 
-      <div class="hint">
-        Click <b>Create new</b> to open the form.
-      </div>
     </aside>
 
   </div>

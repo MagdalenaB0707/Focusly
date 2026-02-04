@@ -54,7 +54,6 @@ export class ActivitiesPage implements OnInit, OnDestroy {
   loading = false;
   saving = false;
   deletingId: string | null = null;
-
   uiError: string | null = null;
 
   form = {

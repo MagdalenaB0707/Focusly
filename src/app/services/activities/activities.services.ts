@@ -5,7 +5,6 @@ import { Activity, ActivityDTO } from 'src/app/models/activity.model';
 import { paths } from '../api/firebase-paths';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { StudySessionDTO } from 'src/app/models/study-session.model';
 
 @Injectable({ providedIn: 'root' })
 export class ActivitiesService {

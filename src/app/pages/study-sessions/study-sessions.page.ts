@@ -74,14 +74,15 @@ export class StudySessionsPage implements OnInit, OnDestroy {
   form: {
     targetType: SessionTargetType;
     targetId: string;
-    startedAtIso: string;
-    durationMinutes: number | null;
+    durationHours: number;
+    durationMins: number;
+
     notes: string;
   } = {
-    targetType: 'course',
+    targetType: 'course' as SessionTargetType,
     targetId: '',
-    startedAtIso: new Date().toISOString(),
-    durationMinutes: null,
+    durationHours: 0,
+    durationMins: 0,
     notes: '',
   };
 
@@ -155,16 +156,30 @@ export class StudySessionsPage implements OnInit, OnDestroy {
       this.uiError = `Select a ${this.form.targetType}.`;
       return;
     }
-    if (!this.form.durationMinutes || this.form.durationMinutes <= 0) {
-      this.uiError = 'Enter duration minutes.';
+    const h = Number(this.form.durationHours ?? 0);
+    const m = Number(this.form.durationMins ?? 0);
+
+    if (Number.isNaN(h) || Number.isNaN(m) || h < 0 || m < 0 || m > 59) {
+      this.uiError = 'Enter valid duration (hours >= 0, minutes 0-59).';
       return;
     }
 
-    const startedAt = Date.parse(this.form.startedAtIso);
-    if (Number.isNaN(startedAt)) {
-      this.uiError = 'Invalid date/time.';
+    const durationMinutes = h * 60 + m;
+    if (durationMinutes <= 0) {
+      this.uiError = 'Enter duration.';
       return;
     }
+
+    const now = new Date();
+    const startedAt = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0,
+    ).getTime();
 
     this.saving = true;
 
@@ -173,14 +188,15 @@ export class StudySessionsPage implements OnInit, OnDestroy {
         targetType: this.form.targetType,
         targetId: this.form.targetId,
         startedAt,
-        durationMinutes: this.form.durationMinutes,
+        durationMinutes,
         notes: this.form.notes.trim() || undefined,
       })
       .subscribe({
         next: (created) => {
           this.sessions = [created, ...this.sessions];
           this.saving = false;
-          this.form.durationMinutes = null;
+          this.form.durationHours = 0;
+          this.form.durationMins = 0;
           this.form.notes = '';
         },
         error: (e) => {
@@ -208,7 +224,19 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     });
   }
 
-  // --- label helpers ---
+  formatMinutes(mins: number): string {
+    const total = mins || 0;
+    if(total < 60) {
+      return `${total}m`;
+    }
+    const h = Math.floor(total / 60);
+    const m = total % 60;
+    if(m === 0) {
+      return `${h}h`;
+    }
+    return `${h}h ${m}m`;
+  }
+
   targetLabel(s: StudySession): string {
     if (s.targetType === 'course') {
       return this.courses.find((c) => c.id === s.targetId)?.title ?? s.targetId;
@@ -222,7 +250,6 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     return new Date(ms).toLocaleString();
   }
 
-  // --- inline edit (samo duration + notes, ostalo ne diramo) ---
   editingId: string | null = null;
   savingId: string | null = null;
 

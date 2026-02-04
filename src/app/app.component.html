@@ -1,26 +1,27 @@
 <ion-app>
   <ion-menu contentId="main-content" type="overlay">
     <ion-header>
-  <ion-toolbar>
-    <ion-title>
-      <div class="menu-header">
-        <img src="assets/icon/logo.png" class="menu-logo" />
-        <span>Focusly</span>
-      </div>
-    </ion-title>
+      <ion-toolbar>
+        <ion-title>
+          <div class="menu-header">
+            <img src="assets/icon/logo.png" class="menu-logo" />
+            <span>Focusly</span>
+          </div>
+        </ion-title>
 
-    <ion-buttons slot="end">
-      <ion-menu-toggle auto-hide="false">
-        <ion-button fill="clear" class="menu-close-btn" aria-label="Close menu">
-          <ion-icon name="close-outline"></ion-icon>
-        </ion-button>
-      </ion-menu-toggle>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-
-
+        <ion-buttons slot="end">
+          <ion-menu-toggle auto-hide="false">
+            <ion-button
+              fill="clear"
+              class="menu-close-btn"
+              aria-label="Close menu"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
 
     <ion-content class="ion-padding">
       <ion-list>
@@ -28,7 +29,6 @@
           <ion-item routerLink="/home" routerLinkActive="active-link">
             <ion-label>Home</ion-label>
           </ion-item>
-
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="true">
@@ -67,7 +67,7 @@
       <ion-item lines="none" class="user-email-item">
         <ion-label>
           <p class="user-email-label">Logged in as</p>
-          <h3 class="user-email">{{ userEmail || '—' }}</h3>
+          <h3 class="user-email">{{ userEmail || "—" }}</h3>
         </ion-label>
       </ion-item>
 
@@ -75,7 +75,6 @@
         Logout
       </ion-button>
     </ion-footer>
-
   </ion-menu>
 
   <div class="ion-page" id="main-content">

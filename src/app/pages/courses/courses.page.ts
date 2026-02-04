@@ -60,7 +60,7 @@ export class CoursesPage implements OnInit, OnDestroy {
 
   uiError: string | null = null;
 
-  // Add form
+
   form: {
     title: string;
     description: string;
@@ -71,7 +71,7 @@ export class CoursesPage implements OnInit, OnDestroy {
     estimatedTime: null,
   };
 
-  // Edit state
+
   editingId: string | null = null;
   editForm: {
     title: string;
@@ -105,9 +105,8 @@ export class CoursesPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          // opciono: sortiraj najnovije prvo ako imaš createdAt
-          // this.courses = [...data].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
-          this.courses = data;
+         this.courses = [...data].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+        //  this.courses = data;
           this.loading = false;
         },
         error: (e) => {
@@ -136,8 +135,6 @@ export class CoursesPage implements OnInit, OnDestroy {
 
     this.saving = true;
 
-    // create() očekuje Omit<CourseDTO,'userId'|'createdAt'> u tvojoj user-specific verziji,
-    // ali ako još nemaš userId/createdAt u modelu, samo ignoriši te komentare.
     this.coursesService
       .create({
         title,

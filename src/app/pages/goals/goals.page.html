@@ -9,8 +9,6 @@
 
 <ion-content class="ion-padding">
   <div class="page-grid">
-
-    <!-- LEFT: LIST -->
     <section class="panel panel--dark">
       <div class="panel-head">
         <div>
@@ -33,10 +31,17 @@
         <ion-item *ngFor="let g of goals; trackBy: trackByGoalId" lines="full">
           <ion-label>
             <h2>{{ labelForGoal(g) }}</h2>
-            <p>Period: {{ g.period }} • Target: {{ g.targetMinutes }} min</p>
             <p>
-              Progress: {{ getGoalProgress(g).done }} / {{ getGoalProgress(g).target }} min
-              ({{ getGoalProgress(g).pct }}%) • Remaining: {{ getGoalProgress(g).remaining }} min
+              Progress: {{ formatMinutes(getGoalProgress(g).done) }} / {{
+              formatMinutes(getGoalProgress(g).target) }} ({{
+              getGoalProgress(g).pct }}%) • Remaining: {{
+              formatMinutes(getGoalProgress(g).remaining) }}
+            </p>
+
+            <p>
+              Progress: {{ getGoalProgress(g).done }} / {{
+              getGoalProgress(g).target }} min ({{ getGoalProgress(g).pct }}%) •
+              Remaining: {{ getGoalProgress(g).remaining }} min
             </p>
           </ion-label>
 
@@ -57,12 +62,11 @@
       </ion-note>
     </section>
 
-    <!-- RIGHT: CREATE -->
     <aside class="panel panel--accent">
       <div class="panel-head">
         <div>
           <h2 class="panel-title">Create goal</h2>
-          <p class="panel-subtitle">Pick target + period + minutes</p>
+          <p class="panel-subtitle">Pick Target + Goal Time</p>
         </div>
       </div>
 
@@ -105,23 +109,28 @@
         </ion-select>
       </ion-item>
 
-      <ion-item>
-        <ion-select label="Period" labelPlacement="stacked" [(ngModel)]="form.period">
-          <ion-select-option value="daily">Daily</ion-select-option>
-          <ion-select-option value="weekly">Weekly</ion-select-option>
-          <ion-select-option value="monthly">Monthly</ion-select-option>
-        </ion-select>
-      </ion-item>
+      <div class="two-col">
+        <ion-item>
+          <ion-input
+            label="Hours"
+            labelPlacement="stacked"
+            type="number"
+            min="0"
+            [(ngModel)]="form.targetHours"
+          ></ion-input>
+        </ion-item>
 
-      <ion-item>
-        <ion-input
-          label="Target minutes"
-          labelPlacement="stacked"
-          type="number"
-          placeholder="e.g. 300"
-          [(ngModel)]="form.targetMinutes"
-        ></ion-input>
-      </ion-item>
+        <ion-item>
+          <ion-input
+            label="Minutes"
+            labelPlacement="stacked"
+            type="number"
+            min="0"
+            max="59"
+            [(ngModel)]="form.targetMins"
+          ></ion-input>
+        </ion-item>
+      </div>
 
       <ion-button expand="block" (click)="createGoal()" [disabled]="saving">
         {{ saving ? 'Saving...' : 'Save goal' }}
@@ -131,6 +140,5 @@
         {{ uiError }}
       </ion-note>
     </aside>
-
   </div>
 </ion-content>

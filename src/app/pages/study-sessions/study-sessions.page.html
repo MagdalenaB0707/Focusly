@@ -9,8 +9,6 @@
 
 <ion-content class="ion-padding">
   <div class="page-grid">
-
-    <!-- LEFT: LIST -->
     <section class="panel panel--dark">
       <div class="panel-head">
         <div>
@@ -33,7 +31,11 @@
         <div *ngFor="let s of sessions; trackBy: trackBySessionId">
           <ion-item lines="full">
             <ion-label>
-              <h2>{{ formatDateTime(s.startedAt) }} — {{ s.durationMinutes }} min</h2>
+              <h2>
+                {{ formatDateTime(s.startedAt) }} — {{
+                formatMinutes(s.durationMinutes) }}
+              </h2>
+
               <p>{{ s.targetType }}: {{ targetLabel(s) }}</p>
               <p *ngIf="s.notes">{{ s.notes }}</p>
             </ion-label>
@@ -59,7 +61,6 @@
             </ion-button>
           </ion-item>
 
-          <!-- INLINE EDIT PANEL -->
           <div *ngIf="editingId === s.id" class="inline-edit">
             <ion-item>
               <ion-input
@@ -80,11 +81,20 @@
             </ion-item>
 
             <div class="actions">
-              <ion-button expand="block" (click)="saveEdit()" [disabled]="savingId === s.id">
+              <ion-button
+                expand="block"
+                (click)="saveEdit()"
+                [disabled]="savingId === s.id"
+              >
                 {{ savingId === s.id ? 'Saving...' : 'Save' }}
               </ion-button>
 
-              <ion-button expand="block" fill="outline" (click)="cancelEdit()" [disabled]="savingId === s.id">
+              <ion-button
+                expand="block"
+                fill="outline"
+                (click)="cancelEdit()"
+                [disabled]="savingId === s.id"
+              >
                 Cancel
               </ion-button>
             </div>
@@ -101,7 +111,6 @@
       </ion-note>
     </section>
 
-    <!-- RIGHT: CREATE -->
     <aside class="panel panel--accent">
       <div class="panel-head">
         <div>
@@ -149,23 +158,28 @@
         </ion-select>
       </ion-item>
 
-      <ion-item>
-        <ion-datetime
-          presentation="date-time"
-          [firstDayOfWeek]="1"
-          [(ngModel)]="form.startedAtIso"
-        ></ion-datetime>
-      </ion-item>
+      <div class="two-col">
+        <ion-item>
+          <ion-input
+            label="Hours"
+            labelPlacement="stacked"
+            type="number"
+            min="0"
+            [(ngModel)]="form.durationHours"
+          ></ion-input>
+        </ion-item>
 
-      <ion-item>
-        <ion-input
-          label="Duration (minutes)"
-          labelPlacement="stacked"
-          type="number"
-          [(ngModel)]="form.durationMinutes"
-          placeholder="e.g. 45"
-        ></ion-input>
-      </ion-item>
+        <ion-item>
+          <ion-input
+            label="Minutes"
+            labelPlacement="stacked"
+            type="number"
+            min="0"
+            max="59"
+            [(ngModel)]="form.durationMins"
+          ></ion-input>
+        </ion-item>
+      </div>
 
       <ion-item>
         <ion-textarea
@@ -185,6 +199,5 @@
         {{ uiError }}
       </ion-note>
     </aside>
-
   </div>
 </ion-content>
