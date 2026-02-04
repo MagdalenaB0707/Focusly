@@ -4,34 +4,80 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content>
+  <div class="auth-wrap">
+    <div class="auth-card">
 
-  <ion-segment [(ngModel)]="mode">
-    <ion-segment-button value="login"><ion-label>Login</ion-label></ion-segment-button>
-    <ion-segment-button value="register"><ion-label>Register</ion-label></ion-segment-button>
-  </ion-segment>
+      <div class="auth-head">
+        <h1 class="auth-title">{{ mode === 'login' ? 'Welcome back' : 'Create account' }}</h1>
+        <p class="auth-sub">
+          {{ mode === 'login' ? 'Log in to continue.' : 'Register to start tracking your progress.' }}
+        </p>
+      </div>
 
-  <ion-item *ngIf="mode === 'register'">
-    <ion-input label="First name" labelPlacement="stacked" [(ngModel)]="form.firstName"></ion-input>
-  </ion-item>
+      <form (ngSubmit)="submit()">
 
-  <ion-item *ngIf="mode === 'register'">
-    <ion-input label="Last name" labelPlacement="stacked" [(ngModel)]="form.lastName"></ion-input>
-  </ion-item>
+        <ion-item *ngIf="mode === 'register'">
+          <ion-input
+            label="First name"
+            labelPlacement="stacked"
+            [(ngModel)]="form.firstName"
+            name="firstName"
+          ></ion-input>
+        </ion-item>
 
-  <ion-item>
-    <ion-input label="Email" labelPlacement="stacked" type="email" [(ngModel)]="form.email"></ion-input>
-  </ion-item>
+        <ion-item *ngIf="mode === 'register'">
+          <ion-input
+            label="Last name"
+            labelPlacement="stacked"
+            [(ngModel)]="form.lastName"
+            name="lastName"
+          ></ion-input>
+        </ion-item>
 
-  <ion-item>
-    <ion-input label="Password" labelPlacement="stacked" type="password" [(ngModel)]="form.password"></ion-input>
-  </ion-item>
+        <ion-item>
+          <ion-input
+            label="Email"
+            labelPlacement="stacked"
+            type="email"
+            [(ngModel)]="form.email"
+            name="email"
+            autocomplete="email"
+          ></ion-input>
+        </ion-item>
 
-  <ion-button expand="block" (click)="submit()" [disabled]="loading">
-    {{ loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Create account') }}
-  </ion-button>
+        <ion-item>
+          <ion-input
+            label="Password"
+            labelPlacement="stacked"
+            type="password"
+            [(ngModel)]="form.password"
+            name="password"
+            autocomplete="current-password"
+          ></ion-input>
+        </ion-item>
 
-  <ion-note color="danger" *ngIf="errorMsg" style="display:block; margin-top:10px;">
-    {{ errorMsg }}
-  </ion-note>
+        <ion-button expand="block" type="submit" [disabled]="loading">
+          {{ loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Create account') }}
+        </ion-button>
+
+        <ion-note color="danger" *ngIf="errorMsg" class="auth-error">
+          {{ errorMsg }}
+        </ion-note>
+
+        <div class="auth-switch">
+          <span *ngIf="mode === 'login'">
+            Don’t have an account?
+            <button type="button" class="link" (click)="setMode('register')">Register</button>
+          </span>
+
+          <span *ngIf="mode === 'register'">
+            Already have an account?
+            <button type="button" class="link" (click)="setMode('login')">Login</button>
+          </span>
+        </div>
+      </form>
+
+    </div>
+  </div>
 </ion-content>

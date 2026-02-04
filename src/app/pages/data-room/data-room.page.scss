@@ -1,48 +1,61 @@
 :host {
-  --bg: #0f172a;
-  --toolbar: #020617;
+  --bg: #0b0f1a;
+  --toolbar: #070a12;
 
-  --panel: #0b1224;         /* wrapper za tabelu */
-  --card: #1e293b;          /* kontrole */
+  --panel: rgba(255, 255, 255, 0.04);
+  --panel-2: rgba(255, 255, 255, 0.06);
   --border: rgba(148, 163, 184, 0.18);
 
   --text: #f8fafc;
-  --muted: #94a3b8;
+  --muted: rgba(148, 163, 184, 0.85);
 
-  --accent: #38bdf8;
+  --accent: #a855f7; 
+  --accent2: #22d3ee; 
   --danger: #ef4444;
-
-  --rowA: rgba(255, 255, 255, 0.02);
-  --rowB: rgba(255, 255, 255, 0.04);
-  --rowHover: rgba(56, 189, 248, 0.08);
 }
 
-/* background strane */
 ion-content {
-  --background: var(--bg);
+  --background: radial-gradient(900px 500px at 20% 0%, rgba(168, 85, 247, 0.18), transparent 60%),
+                radial-gradient(700px 500px at 90% 30%, rgba(34, 211, 238, 0.10), transparent 60%),
+                var(--bg);
 }
 
-/* header */
 ion-header ion-toolbar {
   --background: var(--toolbar);
   --color: var(--text);
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 ion-title {
-  color: var(--text);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
-/* ===== Controls (Metric / Rows / Columns / Year) ===== */
+.dr {
+  display: grid;
+  gap: 14px;
+}
+
+.dr__controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .dr__controls {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 ion-item {
-  --background: var(--card);
+  --background: var(--panel);
   --color: var(--text);
-  border: 1px solid rgba(51, 65, 85, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  margin: 10px 0;
   overflow: hidden;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
 ion-item::part(native) {
@@ -50,132 +63,107 @@ ion-item::part(native) {
   padding-bottom: 10px;
 }
 
-/* label levo */
 ion-item ion-label {
   color: var(--muted);
   font-weight: 700;
 }
 
-/* select look */
 ion-select {
-  --placeholder-color: rgba(148, 163, 184, 0.75);
+  --placeholder-color: rgba(148, 163, 184, 0.7);
   --color: var(--text);
 }
 
-/* focus */
 ion-item.item-has-focus {
-  border-color: rgba(56, 189, 248, 0.9);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15),
-    0 10px 22px rgba(0, 0, 0, 0.25);
+  border-color: rgba(168, 85, 247, 0.55);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.14),
+              0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
-/* error */
-ion-note[color="danger"] {
+.dr__error {
+  display: block;
+  margin: 4px 0 0;
   color: var(--danger);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* spinner */
+.dr__loading {
+  display: flex;
+  justify-content: center;
+  padding: 14px 0;
+}
+
 ion-spinner {
-  color: var(--accent);
+  color: var(--accent2);
 }
 
-/* ===== Pivot table wrapper =====
-   Pošto je wrapper <div style="..."> bez klase, ciljamo ga preko tabelе.
-*/
-table {
-  width: 100% !important;
-  border-collapse: collapse !important;
+.dr__tableWrap {
+  overflow: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.40);
+}
+
+.dr__table {
+  width: 100%;
   min-width: 900px;
+  border-collapse: collapse;
   color: var(--text);
 }
 
-/* spoljašnji panel oko tabele */
-table {
-  background: var(--panel);
-}
-
-/* header cells */
-thead th {
+.dr__table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
   text-align: right;
-  padding: 10px;
+  padding: 12px 12px;
   white-space: nowrap;
-
-  background: rgba(2, 6, 23, 0.65) !important;
-  color: var(--text);
   font-weight: 800;
-
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(7, 10, 18, 0.85);
 }
 
-/* prvi header (sticky left) */
-thead th:first-child {
-  text-align: left;
+.sticky-col {
   position: sticky;
   left: 0;
   z-index: 3;
-  background: rgba(2, 6, 23, 0.92) !important;
+  text-align: left !important;
+  background: rgba(7, 10, 18, 0.92) !important;
 }
 
-/* body cells */
-tbody td {
+.dr__table tbody td {
   text-align: right;
-  padding: 10px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   color: rgba(248, 250, 252, 0.92);
 }
 
-/* sticky first column cells */
-tbody td:first-child {
-  text-align: left;
-  position: sticky;
-  left: 0;
-  z-index: 2;
-
-  /* pregazi tvoj inline #ffffff */
-  background: rgba(11, 18, 36, 0.92) !important;
-  color: var(--text);
-  font-weight: 650;
+.dr__table tbody tr:nth-child(odd) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+.dr__table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.04);
 }
 
-/* zebra rows */
-tbody tr:nth-child(odd) td {
-  background: var(--rowA);
+.dr__table tbody tr:hover td {
+  background: rgba(168, 85, 247, 0.10);
 }
-tbody tr:nth-child(even) td {
-  background: var(--rowB);
-}
-
-/* keep sticky column consistent with zebra */
-tbody tr:nth-child(odd) td:first-child {
-  background: rgba(11, 18, 36, 0.92) !important;
-}
-tbody tr:nth-child(even) td:first-child {
-  background: rgba(11, 18, 36, 0.92) !important;
+.dr__table tbody tr:hover td.sticky-col {
+  box-shadow: inset 3px 0 0 rgba(168, 85, 247, 0.70);
 }
 
-/* hover highlight */
-tbody tr:hover td {
-  background: var(--rowHover);
-}
-tbody tr:hover td:first-child {
-  background: rgba(11, 18, 36, 0.92) !important;
-  box-shadow: inset 3px 0 0 rgba(56, 189, 248, 0.65);
+.total-col {
+  font-weight: 900;
 }
 
-/* total column (last) a bit stronger */
-thead th:last-child,
-tbody td:last-child {
-  font-weight: 800;
+.totals-row td {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(168, 85, 247, 0.10);
 }
 
-/* totals row (last row) */
-tbody tr:last-child td {
-  border-top: 1px solid var(--border);
-  font-weight: 800;
-}
-
-/* “No data” note padding */
-ion-note {
+.dr__empty {
+  display: block;
+  padding: 12px;
   color: var(--muted);
 }

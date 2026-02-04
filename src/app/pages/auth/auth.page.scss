@@ -2,106 +2,141 @@
   --bg: #0f172a;
   --toolbar: #020617;
 
-  --card: #1e293b;
-  --card-border: #334155;
+  --card: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.12);
 
   --text: #f8fafc;
-  --muted: #94a3b8;
-  --accent: #38bdf8;
+  --muted: rgba(248, 250, 252, 0.7);
+
+  --accent: #8b5cf6; 
   --danger: #ef4444;
 }
 
-/* Background */
 ion-content {
-  --background: var(--bg);
+  --background: radial-gradient(1200px 600px at 20% 10%, rgba(139,92,246,0.22), transparent 55%),
+                radial-gradient(900px 500px at 85% 25%, rgba(56,189,248,0.18), transparent 60%),
+                var(--bg);
 }
 
-/* Header */
 ion-header ion-toolbar {
   --background: var(--toolbar);
   --color: var(--text);
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 ion-title {
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.3px;
 }
 
-/* Segment (Login/Register tabs) */
-ion-segment {
-  background: #020617;
-  border-radius: 16px;
-  padding: 4px;
-  margin-bottom: 18px;
-  border: 1px solid #1e293b;
+.auth-wrap {
+  min-height: calc(100vh - 56px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
 }
 
-ion-segment-button {
-  --color: var(--muted);
-  --color-checked: var(--text);
-  --background-checked: rgba(56, 189, 248, 0.15);
-  border-radius: 12px;
-  font-weight: 600;
-}
-
-/* Form fields */
-ion-item {
-  --background: var(--card);
-  --color: var(--text);
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 22px;
   border: 1px solid var(--card-border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+  backdrop-filter: blur(12px);
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+
+.auth-head {
+  margin-bottom: 12px;
+  padding: 4px 4px 0;
+}
+
+.auth-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.auth-sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+ion-item {
+  --background: rgba(0, 0, 0, 0.20);
+  --color: var(--text);
+  --border-color: rgba(255, 255, 255, 0.10);
   border-radius: 16px;
   margin: 12px 0;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
 }
 
-/* Inner padding fix */
 ion-item::part(native) {
+  border-radius: 16px;
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
-/* Labels */
 ion-input::part(label) {
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* Placeholder + text */
 ion-input {
   --color: var(--text);
-  --placeholder-color: rgba(148, 163, 184, 0.7);
+  --placeholder-color: rgba(248, 250, 252, 0.5);
 }
 
-/* Focus highlight */
 ion-item.item-has-focus {
-  border-color: rgba(56, 189, 248, 0.9);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15),
-    0 10px 22px rgba(0, 0, 0, 0.25);
+  --border-color: rgba(139, 92, 246, 0.8);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
 }
 
-/* Main button */
 ion-button[expand="block"] {
-  margin-top: 18px;
+  margin-top: 14px;
   height: 46px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+  font-weight: 900;
+  text-transform: none;
+  letter-spacing: 0.2px;
 
-  --background: rgba(56, 189, 248, 0.18);
+  --background: rgba(139, 92, 246, 0.22);
   --color: var(--text);
   --border-radius: 16px;
 
-  --border-color: rgba(56, 189, 248, 0.6);
+  --border-color: rgba(139, 92, 246, 0.7);
   --border-width: 1px;
   --border-style: solid;
 }
 
 ion-button[expand="block"]:hover {
-  --border-color: rgba(56, 189, 248, 1);
+  --border-color: rgba(139, 92, 246, 1);
 }
 
-/* Error */
-ion-note[color="danger"] {
+.auth-error {
+  display: block;
+  margin-top: 10px;
   color: var(--danger);
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.auth-switch {
+  margin-top: 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 6px;
+  color: var(--text);
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(139, 92, 246, 0.8);
+  text-underline-offset: 3px;
 }

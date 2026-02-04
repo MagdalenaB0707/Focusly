@@ -3,9 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar,
-  IonItem, IonInput, IonButton, IonNote,
-  IonSegment, IonSegmentButton, IonLabel
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonInput,
+  IonButton,
+  IonNote,
+  IonLabel,
 } from '@ionic/angular/standalone';
 
 import { AuthService } from 'src/app/services/auth/auth.services';
@@ -17,12 +23,19 @@ type Mode = 'login' | 'register';
   selector: 'app-auth',
   standalone: true,
   templateUrl: './auth.page.html',
-  styleUrl: '/auth.page.scss',
+  styleUrls: ['./auth.page.scss'],
   imports: [
-    CommonModule, FormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar,
-    IonItem, IonInput, IonButton, IonNote,
-    IonSegment, IonSegmentButton, IonLabel
+    CommonModule,
+    FormsModule,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonNote,
+    IonLabel,
   ],
 })
 export class AuthPage {
@@ -38,6 +51,12 @@ export class AuthPage {
     private router: Router
   ) {}
 
+  setMode(m: Mode) {
+    this.mode = m;
+    this.errorMsg = null;
+    this.form.password = '';
+  }
+
   submit() {
     this.errorMsg = null;
 
@@ -45,7 +64,8 @@ export class AuthPage {
     const password = this.form.password;
 
     if (!email || password.length < 6) {
-      this.errorMsg = 'Email is required and password must be at least 6 characters.';
+      this.errorMsg =
+        'Email is required and password must be at least 6 characters.';
       return;
     }
 
@@ -66,7 +86,6 @@ export class AuthPage {
       return;
     }
 
-    // register
     if (!this.form.firstName.trim() || !this.form.lastName.trim()) {
       this.errorMsg = 'First name and last name are required.';
       this.loading = false;
@@ -75,22 +94,24 @@ export class AuthPage {
 
     this.auth.register(email, password).subscribe({
       next: (session) => {
-        this.users.setProfile(session.uid, {
-          firstName: this.form.firstName.trim(),
-          lastName: this.form.lastName.trim(),
-          email,
-          createdAt: Date.now(),
-        }).subscribe({
-          next: async () => {
-            this.loading = false;
-            await this.router.navigateByUrl('/home', { replaceUrl: true });
-          },
-          error: (e) => {
-            console.error(e);
-            this.errorMsg = 'Profile save failed.';
-            this.loading = false;
-          },
-        });
+        this.users
+          .setProfile(session.uid, {
+            firstName: this.form.firstName.trim(),
+            lastName: this.form.lastName.trim(),
+            email,
+            createdAt: Date.now(),
+          })
+          .subscribe({
+            next: async () => {
+              this.loading = false;
+              await this.router.navigateByUrl('/home', { replaceUrl: true });
+            },
+            error: (e) => {
+              console.error(e);
+              this.errorMsg = 'Profile save failed.';
+              this.loading = false;
+            },
+          });
       },
       error: (e) => {
         console.error(e);
