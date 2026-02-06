@@ -1,15 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
     <ion-title>Dashboard</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" [routerLink]="['/tabs/data-room']" aria-label="Data Room">
+        <ion-icon name="folder-open-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <div class="dash">
-
     <ion-card class="card card--pills">
       <ion-card-header>
         <ion-card-title>Progress Pills</ion-card-title>
@@ -47,11 +49,15 @@
           </ion-row>
         </ion-grid>
 
-        <ion-note *ngIf="loading" style="display: block; margin-top: 10px;">
+        <ion-note *ngIf="loading" style="display: block; margin-top: 10px">
           Loading...
         </ion-note>
 
-        <ion-note color="danger" *ngIf="errorMsg" style="display: block; margin-top: 10px;">
+        <ion-note
+          color="danger"
+          *ngIf="errorMsg"
+          style="display: block; margin-top: 10px"
+        >
           {{ errorMsg }}
         </ion-note>
       </ion-card-content>
@@ -63,33 +69,32 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-note *ngIf="!activeGoal" style="display: block;">
+        <ion-note *ngIf="!activeGoal" style="display: block">
           No goals yet. Create one in Goals page.
         </ion-note>
 
         <div *ngIf="activeGoal">
-          <h2 style="margin: 0;">{{ activeGoalTitle }}</h2>
+          <h2 style="margin: 0">{{ activeGoalTitle }}</h2>
 
-          <p style="margin: 8px 0 12px 0;">
+          <p style="margin: 8px 0 12px 0">
             Type: {{ activeGoal.targetType }} • Period: {{ activeGoal.period }}
           </p>
 
-          <p style="margin: 0;">
-            Studied: <b>{{ activeGoalProgress.done }}</b> /
-            {{ activeGoalProgress.target }} min
-            ({{ activeGoalProgress.pct }}%)
+          <p style="margin: 0">
+            Studied: <b>{{ activeGoalProgress.done }}</b> / {{
+            activeGoalProgress.target }} min ({{ activeGoalProgress.pct }}%)
           </p>
 
-          <p style="margin: 8px 0 0 0;">
+          <p style="margin: 8px 0 0 0">
             Remaining: {{ activeGoalProgress.remaining }} min
           </p>
 
-          <hr style="margin: 14px 0; opacity: 0.18;" />
+          <hr style="margin: 14px 0; opacity: 0.18" />
 
-          <p style="margin: 0;">
+          <p style="margin: 0">
             Sessions this period: <b>{{ sessionsCountInActivePeriod }}</b>
           </p>
-          <p style="margin: 8px 0 0 0;">
+          <p style="margin: 8px 0 0 0">
             Total minutes this period: <b>{{ minutesInActivePeriod }}</b>m
           </p>
         </div>
@@ -107,18 +112,24 @@
             <ion-label>
               <h3>{{ d.label }}</h3>
               <p>
-                Studied: {{ d.minutes }}m • Goal: {{ dailyGoalMinutes }}m
-                • {{ d.hitGoal ? '✅ goal reached' : '❌ not reached' }}
+                Studied: {{ d.minutes }}m • Goal: {{ dailyGoalMinutes }}m • {{
+                d.hitGoal ? '✅ goal reached' : '❌ not reached' }}
               </p>
             </ion-label>
           </ion-item>
         </ion-list>
 
-        <ion-note *ngIf="streakDays > 0" style="display: block; margin-top: 10px;">
+        <ion-note
+          *ngIf="streakDays > 0"
+          style="display: block; margin-top: 10px"
+        >
           Current streak: <b>{{ streakDays }}</b> day(s)
         </ion-note>
 
-        <ion-note *ngIf="streakDays === 0" style="display: block; margin-top: 10px;">
+        <ion-note
+          *ngIf="streakDays === 0"
+          style="display: block; margin-top: 10px"
+        >
           No streak yet (start today 💪)
         </ion-note>
       </ion-card-content>
@@ -130,15 +141,17 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-note *ngIf="activityBreakdown.length === 0" style="display: block;">
+        <ion-note *ngIf="activityBreakdown.length === 0" style="display: block">
           No activity sessions in this period.
         </ion-note>
 
         <ion-list *ngIf="activityBreakdown.length > 0">
-          <ion-item *ngFor="let row of activityBreakdown; trackBy: trackByBreakdownId">
+          <ion-item
+            *ngFor="let row of activityBreakdown; trackBy: trackByBreakdownId"
+          >
             <ion-label>
-              <h2 style="margin: 0;">{{ row.label }}</h2>
-              <p style="margin: 6px 0 0 0;">
+              <h2 style="margin: 0">{{ row.label }}</h2>
+              <p style="margin: 6px 0 0 0">
                 {{ row.minutes }} min • {{ row.pct }}%
               </p>
             </ion-label>
@@ -153,15 +166,17 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-note *ngIf="courseBreakdown.length === 0" style="display: block;">
+        <ion-note *ngIf="courseBreakdown.length === 0" style="display: block">
           No course sessions in this period.
         </ion-note>
 
         <ion-list *ngIf="courseBreakdown.length > 0">
-          <ion-item *ngFor="let row of courseBreakdown; trackBy: trackByBreakdownId">
+          <ion-item
+            *ngFor="let row of courseBreakdown; trackBy: trackByBreakdownId"
+          >
             <ion-label>
-              <h2 style="margin: 0;">{{ row.label }}</h2>
-              <p style="margin: 6px 0 0 0;">
+              <h2 style="margin: 0">{{ row.label }}</h2>
+              <p style="margin: 6px 0 0 0">
                 {{ row.minutes }} min • {{ row.pct }}%
               </p>
             </ion-label>
@@ -199,16 +214,15 @@
       </ion-card-header>
 
       <ion-card-content>
-        <p style="margin: 0;">
+        <p style="margin: 0">
           Cumulative differential (studied - daily goal):
           <b>{{ sharePriceDiff }}m</b>
         </p>
 
-        <ion-note style="display:block; margin-top: 8px;">
+        <ion-note style="display: block; margin-top: 8px">
           (Kasnije ćemo dodati graf kao na slici.)
         </ion-note>
       </ion-card-content>
     </ion-card>
-
   </div>
 </ion-content>

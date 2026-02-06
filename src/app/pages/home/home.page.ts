@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonButtons,
-  IonMenuButton,
   IonHeader,
   IonToolbar,
   IonTitle,
@@ -15,10 +15,12 @@ import {
   IonRow,
   IonCol,
   IonItem,
+  IonButton,
+  IonIcon,
   IonLabel,
   IonList,
   IonNote,
-  IonBadge,
+  IonBadge
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -32,14 +34,14 @@ import { ActivitiesService } from 'src/app/services/activities/activities.servic
 import { CoursesService } from 'src/app/services/courses/courses.service';
 
 type DayStat = {
-  key: string; // YYYY-MM-DD
-  label: string; // Mon / Tue...
+  key: string;
+  label: string;
   minutes: number;
   hitGoal: boolean;
 };
 type BreakdownRow = {
-  id: string; // activityId
-  label: string; // za sad activityId (kasnije title)
+  id: string;
+  label: string;
   minutes: number;
   pct: number;
 };
@@ -54,10 +56,13 @@ type BreakdownRow = {
     CommonModule,
     IonHeader,
     IonToolbar,
-    IonTitle,
     IonButtons,
-    IonMenuButton,
+    IonIcon,
+    IonTitle,
+    IonButton,
     IonContent,
+    RouterLink,
+    IonIcon,
     IonCard,
     IonCardHeader,
     IonCardTitle,
@@ -110,7 +115,7 @@ export class HomePage implements OnInit, OnDestroy {
     private sessionsService: StudySessionsService,
     private goalsService: GoalsService,
     private coursesService: CoursesService,
-    private activitiesService: ActivitiesService
+    private activitiesService: ActivitiesService,
   ) {}
 
   ngOnInit() {
@@ -205,7 +210,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.sharePriceDiff = this.computeSharePriceDiff(
       this.last7Days,
-      this.dailyGoalMinutes
+      this.dailyGoalMinutes,
     );
 
     this.medals = this.computeMedals(); // across all days in DB (simple)
@@ -281,7 +286,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private pickActiveGoal() {
-    // Najjednostavnije: uzmi najnoviji goal (po createdAt)
     if (!this.goals || this.goals.length === 0) {
       this.activeGoal = null;
       this.activeGoalTitle = '';
@@ -289,7 +293,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     const sorted = [...this.goals].sort(
-      (a, b) => (b.createdAt || 0) - (a.createdAt || 0)
+      (a, b) => (b.createdAt || 0) - (a.createdAt || 0),
     );
     this.activeGoal = sorted[0];
 
@@ -313,12 +317,12 @@ export class HomePage implements OnInit, OnDestroy {
         s.startedAt >= from &&
         s.startedAt < to &&
         s.targetType === this.activeGoal!.targetType &&
-        s.targetId === this.activeGoal!.targetId
+        s.targetId === this.activeGoal!.targetId,
     );
 
     const done = sessionsInPeriod.reduce(
       (sum, s) => sum + (s.durationMinutes || 0),
-      0
+      0,
     );
     const target = this.activeGoal.targetMinutes || 0;
     const pct =
@@ -327,12 +331,10 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.activeGoalProgress = { done, target, pct, remaining };
 
-    // dodatni summary
     this.sessionsCountInActivePeriod = sessionsInPeriod.length;
     this.minutesInActivePeriod = done;
   }
 
-  // isti helper kao u GoalsPage (kopiramo na dashboard)
   private getPeriodRange(period: 'daily' | 'weekly' | 'monthly'): {
     from: number;
     to: number;
@@ -347,7 +349,7 @@ export class HomePage implements OnInit, OnDestroy {
         0,
         0,
         0,
-        0
+        0,
       ).getTime();
       const to = new Date(
         now.getFullYear(),
@@ -356,13 +358,13 @@ export class HomePage implements OnInit, OnDestroy {
         0,
         0,
         0,
-        0
+        0,
       ).getTime();
       return { from, to };
     }
 
     if (period === 'weekly') {
-      const day = now.getDay(); // 0=Sun
+      const day = now.getDay();
       const diffToMonday = (day + 6) % 7;
       const monday = new Date(
         now.getFullYear(),
@@ -371,7 +373,7 @@ export class HomePage implements OnInit, OnDestroy {
         0,
         0,
         0,
-        0
+        0,
       );
       const from = monday.getTime();
       const to = new Date(
@@ -381,12 +383,11 @@ export class HomePage implements OnInit, OnDestroy {
         0,
         0,
         0,
-        0
+        0,
       ).getTime();
       return { from, to };
     }
 
-    // monthly
     const from = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -394,7 +395,7 @@ export class HomePage implements OnInit, OnDestroy {
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
     const to = new Date(
       now.getFullYear(),
@@ -403,12 +404,10 @@ export class HomePage implements OnInit, OnDestroy {
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
     return { from, to };
   }
-
-  // ---------- Calculations ----------
 
   private sumMinutesInRange(from: number, to: number): number {
     return this.sessions
@@ -417,7 +416,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private pickDailyGoalMinutes(goals: Goal[]): number {
-    // najjednostavnije: uzmi najveći daily goal kao "daily target"
     const daily = goals.filter((g) => g.period === 'daily');
     if (daily.length === 0) return 0;
     return Math.max(...daily.map((g) => g.targetMinutes || 0));
@@ -449,7 +447,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private computeStreakDays(last7: DayStat[]): number {
-    // streak: koliko uzastopnih dana unazad (od danas) ima "studied > 0"
     let streak = 0;
     for (let i = last7.length - 1; i >= 0; i--) {
       if (last7[i].minutes > 0) streak++;
@@ -464,7 +461,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private computeMedals(): { bronze: number; silver: number; gold: number } {
-    // medal per day based on total minutes that day (across all targets)
     const byDay = new Map<string, number>();
 
     for (const s of this.sessions) {
@@ -485,8 +481,6 @@ export class HomePage implements OnInit, OnDestroy {
     return { bronze, silver, gold };
   }
 
-  // ---------- Date helpers ----------
-
   private rangeDay(d: Date): { from: number; to: number } {
     const from = new Date(
       d.getFullYear(),
@@ -495,7 +489,7 @@ export class HomePage implements OnInit, OnDestroy {
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
     const to = new Date(
       d.getFullYear(),
@@ -504,7 +498,7 @@ export class HomePage implements OnInit, OnDestroy {
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
     return { from, to };
   }
@@ -514,13 +508,12 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private rangeThisWeek(now: Date): { from: number; to: number } {
-    // Monday start
     const day = now.getDay(); // 0=Sun
     const diffToMonday = (day + 6) % 7;
     const monday = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate() - diffToMonday
+      now.getDate() - diffToMonday,
     );
     const from = new Date(
       monday.getFullYear(),
@@ -529,7 +522,7 @@ export class HomePage implements OnInit, OnDestroy {
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
     const to = new Date(
       monday.getFullYear(),
@@ -538,7 +531,7 @@ export class HomePage implements OnInit, OnDestroy {
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
     return { from, to };
   }
@@ -551,7 +544,7 @@ export class HomePage implements OnInit, OnDestroy {
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
     const to = new Date(
       now.getFullYear(),
@@ -560,13 +553,12 @@ export class HomePage implements OnInit, OnDestroy {
       0,
       0,
       0,
-      0
+      0,
     ).getTime();
     return { from, to };
   }
 
   private toDateKey(d: Date): string {
-    // YYYY-MM-DD in local time
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');

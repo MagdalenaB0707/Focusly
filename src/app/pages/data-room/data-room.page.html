@@ -1,15 +1,15 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
     </ion-buttons>
+
     <ion-title>Data Room</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <div class="dr">
-
     <div class="dr__controls">
       <ion-item>
         <ion-label>Metric</ion-label>
@@ -62,9 +62,7 @@
               {{ rowDim === 'courses' ? 'Course' : 'Activity' }}
             </th>
 
-            <th *ngFor="let c of colLabels; trackBy: trackByIdx">
-              {{ c }}
-            </th>
+            <th *ngFor="let c of colLabels; trackBy: trackByIdx">{{ c }}</th>
 
             <th class="total-col">Total</th>
           </tr>
@@ -97,6 +95,5 @@
         No data for selected filters.
       </ion-note>
     </div>
-
   </div>
 </ion-content>

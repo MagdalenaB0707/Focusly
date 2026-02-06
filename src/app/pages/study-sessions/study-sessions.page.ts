@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonButtons,
   IonContent,
@@ -19,6 +20,7 @@ import {
   IonSelectOption,
   IonDatetime,
   IonTextarea,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -47,6 +49,8 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
     IonTitle,
     IonButtons,
     IonMenuButton,
+    RouterLink,
+    IonIcon,
     IonContent,
     IonItem,
     IonLabel,
@@ -226,12 +230,12 @@ export class StudySessionsPage implements OnInit, OnDestroy {
 
   formatMinutes(mins: number): string {
     const total = mins || 0;
-    if(total < 60) {
+    if (total < 60) {
       return `${total}m`;
     }
     const h = Math.floor(total / 60);
     const m = total % 60;
-    if(m === 0) {
+    if (m === 0) {
       return `${h}h`;
     }
     return `${h}h ${m}m`;

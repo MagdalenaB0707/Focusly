@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
   IonButtons,
-  IonMenuButton,
+  IonIcon,
   IonHeader,
   IonToolbar,
   IonTitle,
@@ -30,12 +31,12 @@ import { ActivitiesService } from 'src/app/services/activities/activities.servic
   imports: [
     CommonModule,
     FormsModule,
-
+    RouterLink,
+    IonIcon,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonMenuButton,
 
     IonContent,
     IonItem,

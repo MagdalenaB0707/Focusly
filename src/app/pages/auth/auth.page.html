@@ -1,22 +1,19 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Focusly</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <div class="auth-wrap">
-    <div class="auth-card">
+    <div class="brand">Focusly</div>
 
+    <div class="auth-card">
       <div class="auth-head">
-        <h1 class="auth-title">{{ mode === 'login' ? 'Welcome back' : 'Create account' }}</h1>
+        <h1 class="auth-title">
+          {{ mode === 'login' ? 'Welcome back' : 'Create account' }}
+        </h1>
         <p class="auth-sub">
-          {{ mode === 'login' ? 'Log in to continue.' : 'Register to start tracking your progress.' }}
+          {{ mode === 'login' ? 'Log in to continue.' : 'Register to start
+          tracking your progress.' }}
         </p>
       </div>
 
       <form (ngSubmit)="submit()">
-
         <ion-item *ngIf="mode === 'register'">
           <ion-input
             label="First name"
@@ -58,7 +55,8 @@
         </ion-item>
 
         <ion-button expand="block" type="submit" [disabled]="loading">
-          {{ loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Create account') }}
+          {{ loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Create
+          account') }}
         </ion-button>
 
         <ion-note color="danger" *ngIf="errorMsg" class="auth-error">
@@ -67,17 +65,32 @@
 
         <div class="auth-switch">
           <span *ngIf="mode === 'login'">
-            Don’t have an account?
-            <button type="button" class="link" (click)="setMode('register')">Register</button>
+            <span class="switch-text">Don’t have an account?</span>
+            <ion-button
+              fill="clear"
+              size="small"
+              type="button"
+              class="switch-link"
+              (click)="setMode('register')"
+            >
+              Register
+            </ion-button>
           </span>
 
           <span *ngIf="mode === 'register'">
-            Already have an account?
-            <button type="button" class="link" (click)="setMode('login')">Login</button>
+            <span class="switch-text">Already have an account?</span>
+            <ion-button
+              fill="clear"
+              size="small"
+              type="button"
+              class="switch-link"
+              (click)="setMode('login')"
+            >
+              Login
+            </ion-button>
           </span>
         </div>
       </form>
-
     </div>
   </div>
 </ion-content>

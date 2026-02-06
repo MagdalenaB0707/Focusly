@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonButtons,
-  IonMenuButton,
   IonHeader,
   IonToolbar,
   IonTitle,
@@ -14,6 +13,7 @@ import {
   IonSelectOption,
   IonSpinner,
   IonNote,
+  IonBackButton
 } from '@ionic/angular/standalone';
 
 import { Subject, takeUntil } from 'rxjs';
@@ -50,7 +50,6 @@ type PivotRow = {
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonMenuButton,
 
     IonContent,
     IonItem,
@@ -60,6 +59,7 @@ type PivotRow = {
 
     IonSpinner,
     IonNote,
+    IonBackButton
 
   ],
 })

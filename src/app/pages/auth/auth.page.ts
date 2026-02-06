@@ -75,7 +75,7 @@ export class AuthPage {
       this.auth.login(email, password).subscribe({
         next: async () => {
           this.loading = false;
-          await this.router.navigateByUrl('/home', { replaceUrl: true });
+          await this.router.navigateByUrl('/tabs/home', { replaceUrl: true });
         },
         error: (e) => {
           console.error(e);
@@ -104,7 +104,7 @@ export class AuthPage {
           .subscribe({
             next: async () => {
               this.loading = false;
-              await this.router.navigateByUrl('/home', { replaceUrl: true });
+              await this.router.navigateByUrl('/tabs/home', { replaceUrl: true });
             },
             error: (e) => {
               console.error(e);

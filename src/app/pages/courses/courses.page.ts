@@ -1,11 +1,11 @@
-// src/app/pages/courses/courses.page.ts
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
   IonButtons,
-  IonMenuButton,
   IonHeader,
+  IonIcon,
   IonToolbar,
   IonTitle,
   IonContent,
@@ -31,13 +31,12 @@ import { CoursesService } from 'src/app/services/courses/courses.service';
   imports: [
     CommonModule,
     FormsModule,
-
+    IonIcon,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonMenuButton,
-
+    RouterLink,
     IonContent,
     IonItem,
     IonInput,
@@ -60,7 +59,6 @@ export class CoursesPage implements OnInit, OnDestroy {
 
   uiError: string | null = null;
 
-
   form: {
     title: string;
     description: string;
@@ -70,7 +68,6 @@ export class CoursesPage implements OnInit, OnDestroy {
     description: '',
     estimatedTime: null,
   };
-
 
   editingId: string | null = null;
   editForm: {
@@ -105,8 +102,10 @@ export class CoursesPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-         this.courses = [...data].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
-        //  this.courses = data;
+          this.courses = [...data].sort(
+            (a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0),
+          );
+          //  this.courses = data;
           this.loading = false;
         },
         error: (e) => {
@@ -208,7 +207,7 @@ export class CoursesPage implements OnInit, OnDestroy {
                   description: description || undefined,
                   estimatedTime: estimatedTime ?? undefined,
                 }
-              : x
+              : x,
           );
 
           this.updating = false;
@@ -236,7 +235,7 @@ export class CoursesPage implements OnInit, OnDestroy {
         this.uiError = 'Delete failed.';
         this.deletingId = null;
       },
-    })
+    });
   }
 
   trackByCourseId(_: number, c: Course) {

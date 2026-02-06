@@ -22,7 +22,6 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  // privremeno: "fake login" (da menu radi)
   setDemoUser() {
     const demo: CurrentUser = {
       id: 'demo',

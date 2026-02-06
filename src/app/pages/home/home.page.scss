@@ -26,6 +26,11 @@ ion-header ion-toolbar {
   --color: var(--text);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+ion-header {
+  position: relative;
+  z-index: 9999;
+}
+
 
 .dash {
   display: grid;

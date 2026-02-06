@@ -12,5 +12,5 @@ export type AuthSession = {
   refreshToken: string;
   email: string;
   uid: string;
-  expiresAt: number; // ms timestamp
+  expiresAt: number; 
 };

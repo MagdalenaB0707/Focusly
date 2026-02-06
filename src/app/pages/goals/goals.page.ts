@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
   IonButtons,
   IonMenuButton,
@@ -17,6 +18,7 @@ import {
   IonLabel,
   IonSpinner,
   IonNote,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -38,13 +40,13 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
   imports: [
     CommonModule,
     FormsModule,
-
+    IonIcon,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,
     IonMenuButton,
-
+    RouterLink,
     IonContent,
     IonItem,
     IonSelect,
@@ -305,10 +307,9 @@ export class GoalsPage implements OnInit, OnDestroy {
   }
 
   formatMinutes(total: number): string {
-  const mins = Number(total || 0);
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return `${h}h ${m}m`;
-}
-
+    const mins = Number(total || 0);
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return `${h}h ${m}m`;
+  }
 }
