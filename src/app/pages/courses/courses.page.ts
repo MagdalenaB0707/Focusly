@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   IonButtons,
-  IonHeader,
   IonIcon,
+  IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
@@ -13,15 +13,20 @@ import {
   IonInput,
   IonTextarea,
   IonButton,
-  IonList,
-  IonLabel,
   IonSpinner,
   IonNote,
+  IonModal,
+  IonCard,
+  IonCardContent,
+  IonFab,
+  IonFabButton,
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
 
 import { Course } from 'src/app/models/course.model';
 import { CoursesService } from 'src/app/services/courses/courses.service';
+
+type FormMode = 'create' | 'edit';
 
 @Component({
   selector: 'app-courses',
@@ -31,22 +36,29 @@ import { CoursesService } from 'src/app/services/courses/courses.service';
   imports: [
     CommonModule,
     FormsModule,
-    IonIcon,
+    RouterLink,
+
     IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,
-    RouterLink,
+    IonIcon,
+
     IonContent,
+    IonNote,
+    IonSpinner,
+
+    IonCard,
+    IonCardContent,
+
+    IonModal,
     IonItem,
     IonInput,
     IonTextarea,
     IonButton,
 
-    IonList,
-    IonLabel,
-    IonSpinner,
-    IonNote,
+    IonFab,
+    IonFabButton,
   ],
 })
 export class CoursesPage implements OnInit, OnDestroy {
@@ -56,25 +68,18 @@ export class CoursesPage implements OnInit, OnDestroy {
   saving = false;
   updating = false;
   deletingId: string | null = null;
-
   uiError: string | null = null;
 
-  form: {
-    title: string;
-    description: string;
-    estimatedTime: number | null;
-  } = {
-    title: '',
-    description: '',
-    estimatedTime: null,
-  };
+  // actions modal
+  actionsOpen = false;
+  selected: Course | null = null;
 
+  // form modal
+  formOpen = false;
+  formMode: FormMode = 'create';
   editingId: string | null = null;
-  editForm: {
-    title: string;
-    description: string;
-    estimatedTime: number | null;
-  } = {
+
+  form: { title: string; description: string; estimatedTime: number | null } = {
     title: '',
     description: '',
     estimatedTime: null,
@@ -103,9 +108,8 @@ export class CoursesPage implements OnInit, OnDestroy {
       .subscribe({
         next: (data) => {
           this.courses = [...data].sort(
-            (a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0),
+            (a: any, b: any) => (b.createdAt ?? 0) - (a.createdAt ?? 0),
           );
-          //  this.courses = data;
           this.loading = false;
         },
         error: (e) => {
@@ -116,7 +120,57 @@ export class CoursesPage implements OnInit, OnDestroy {
       });
   }
 
-  createCourse() {
+  // ---------- Create ----------
+  openCreate() {
+    this.uiError = null;
+    this.formMode = 'create';
+    this.editingId = null;
+    this.form = { title: '', description: '', estimatedTime: null };
+    this.formOpen = true;
+  }
+
+  // ---------- Actions ----------
+  openActions(c: Course) {
+    this.selected = c;
+    this.actionsOpen = true;
+  }
+
+  closeActions() {
+    this.actionsOpen = false;
+    this.selected = null;
+  }
+
+  get selectedId(): string | null {
+    return this.selected?.id ?? null;
+  }
+
+  openEditFromActions() {
+    if (!this.selected) return;
+    this.actionsOpen = false;
+
+    this.uiError = null;
+    this.formMode = 'edit';
+    this.editingId = this.selected.id;
+
+    this.form = {
+      title: this.selected.title,
+      description: this.selected.description ?? '',
+      estimatedTime: (this.selected as any).estimatedTime ?? null,
+    };
+
+    this.formOpen = true;
+  }
+
+  // ---------- Form submit ----------
+  closeForm() {
+    this.formOpen = false;
+    this.uiError = null;
+    this.formMode = 'create';
+    this.editingId = null;
+    this.form = { title: '', description: '', estimatedTime: null };
+  }
+
+  submitForm() {
     this.uiError = null;
 
     const title = this.form.title.trim();
@@ -132,75 +186,49 @@ export class CoursesPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
+    // create
+    if (this.formMode === 'create') {
+      this.saving = true;
 
-    this.coursesService
-      .create({
-        title,
-        description: description || undefined,
-        estimatedTime: estimatedTime ?? undefined,
-      } as any)
-      .subscribe({
-        next: (created: Course) => {
-          this.courses = [created, ...this.courses];
-          this.saving = false;
+      this.coursesService
+        .create({
+          title,
+          description: description || undefined,
+          estimatedTime: estimatedTime ?? undefined,
+          createdAt: Date.now(),
+        } as any)
+        .subscribe({
+          next: (created: Course) => {
+            this.courses = [created, ...this.courses];
+            this.saving = false;
+            this.closeForm();
+          },
+          error: (e) => {
+            console.error(e);
+            this.uiError = 'Create failed.';
+            this.saving = false;
+          },
+        });
 
-          this.form.title = '';
-          this.form.description = '';
-          this.form.estimatedTime = null;
-        },
-        error: (e) => {
-          console.error(e);
-          this.uiError = 'Create failed.';
-          this.saving = false;
-        },
-      });
-  }
-
-  startEdit(c: Course) {
-    this.uiError = null;
-    this.editingId = c.id;
-
-    this.editForm.title = c.title;
-    this.editForm.description = c.description ?? '';
-    this.editForm.estimatedTime = (c as any).estimatedTime ?? null;
-  }
-
-  cancelEdit() {
-    this.editingId = null;
-    this.editForm.title = '';
-    this.editForm.description = '';
-    this.editForm.estimatedTime = null;
-  }
-
-  saveEdit(c: Course) {
-    this.uiError = null;
-
-    const title = this.editForm.title.trim();
-    const description = this.editForm.description.trim();
-    const estimatedTime = this.editForm.estimatedTime;
-
-    if (!title) {
-      this.uiError = 'Title is required.';
       return;
     }
-    if (estimatedTime != null && estimatedTime < 0) {
-      this.uiError = 'Estimated time cannot be negative.';
-      return;
-    }
+
+    // edit
+    if (!this.editingId) return;
 
     this.updating = true;
+    const id = this.editingId;
 
     this.coursesService
-      .update(c.id, {
+      .update(id, {
         title,
         description: description || undefined,
         estimatedTime: estimatedTime ?? undefined,
       } as any)
       .subscribe({
         next: () => {
-          this.courses = this.courses.map((x) =>
-            x.id === c.id
+          this.courses = this.courses.map((x: any) =>
+            x.id === id
               ? {
                   ...x,
                   title,
@@ -211,7 +239,7 @@ export class CoursesPage implements OnInit, OnDestroy {
           );
 
           this.updating = false;
-          this.cancelEdit();
+          this.closeForm();
         },
         error: (e) => {
           console.error(e);
@@ -221,6 +249,7 @@ export class CoursesPage implements OnInit, OnDestroy {
       });
   }
 
+  // ---------- Delete ----------
   deleteCourse(id: string) {
     this.uiError = null;
     this.deletingId = id;
@@ -229,6 +258,9 @@ export class CoursesPage implements OnInit, OnDestroy {
       next: () => {
         this.courses = this.courses.filter((c) => c.id !== id);
         this.deletingId = null;
+        this.actionsOpen = false;
+
+        if (this.formOpen && this.editingId === id) this.closeForm();
       },
       error: (e) => {
         console.error(e);

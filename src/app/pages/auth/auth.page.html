@@ -1,94 +1,86 @@
 <ion-content>
-  <div class="auth-wrap">
-    <div class="brand">Focusly</div>
+  <div class="auth-container">
+    <div class="brand-section">
+      <h1 class="brand-logo">Focusly</h1>
+      <p>Organize your mind, one task at a time.</p>
+    </div>
 
     <div class="auth-card">
-      <div class="auth-head">
-        <h1 class="auth-title">
-          {{ mode === 'login' ? 'Welcome back' : 'Create account' }}
-        </h1>
-        <p class="auth-sub">
-          {{ mode === 'login' ? 'Log in to continue.' : 'Register to start
-          tracking your progress.' }}
+      <div class="auth-header">
+        <h2>{{ mode === 'login' ? 'Welcome Back' : 'Join Us' }}</h2>
+        <p>
+          {{ mode === 'login' ? 'Enter your details to continue' : 'Sign up to
+          start your journey' }}
         </p>
       </div>
 
       <form (ngSubmit)="submit()">
-        <ion-item *ngIf="mode === 'register'">
-          <ion-input
-            label="First name"
-            labelPlacement="stacked"
-            [(ngModel)]="form.firstName"
-            name="firstName"
-          ></ion-input>
-        </ion-item>
+        <div class="input-group">
+          <ion-item lines="none" *ngIf="mode === 'register'">
+            <ion-input
+              label="First Name"
+              labelPlacement="stacked"
+              [(ngModel)]="form.firstName"
+              name="firstName"
+              placeholder="John"
+            ></ion-input>
+          </ion-item>
 
-        <ion-item *ngIf="mode === 'register'">
-          <ion-input
-            label="Last name"
-            labelPlacement="stacked"
-            [(ngModel)]="form.lastName"
-            name="lastName"
-          ></ion-input>
-        </ion-item>
+          <ion-item lines="none" *ngIf="mode === 'register'">
+            <ion-input
+              label="Last Name"
+              labelPlacement="stacked"
+              [(ngModel)]="form.lastName"
+              name="lastName"
+              placeholder="Doe"
+            ></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-input
-            label="Email"
-            labelPlacement="stacked"
-            type="email"
-            [(ngModel)]="form.email"
-            name="email"
-            autocomplete="email"
-          ></ion-input>
-        </ion-item>
+          <ion-item lines="none">
+            <ion-input
+              label="Email"
+              type="email"
+              labelPlacement="stacked"
+              [(ngModel)]="form.email"
+              name="email"
+              placeholder="email@example.com"
+            ></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-input
-            label="Password"
-            labelPlacement="stacked"
-            type="password"
-            [(ngModel)]="form.password"
-            name="password"
-            autocomplete="current-password"
-          ></ion-input>
-        </ion-item>
+          <ion-item lines="none">
+            <ion-input
+              label="Password"
+              type="password"
+              labelPlacement="stacked"
+              [(ngModel)]="form.password"
+              name="password"
+              placeholder="••••••••"
+            ></ion-input>
+          </ion-item>
+        </div>
 
-        <ion-button expand="block" type="submit" [disabled]="loading">
-          {{ loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Create
-          account') }}
+        <ion-button
+          expand="block"
+          type="submit"
+          class="submit-btn"
+          [disabled]="loading"
+        >
+          <ion-spinner name="crescent" *ngIf="loading"></ion-spinner>
+          <span *ngIf="!loading"
+            >{{ mode === 'login' ? 'Login' : 'Create Account' }}</span
+          >
         </ion-button>
 
-        <ion-note color="danger" *ngIf="errorMsg" class="auth-error">
-          {{ errorMsg }}
-        </ion-note>
+        <div class="error-message" *ngIf="errorMsg">{{ errorMsg }}</div>
 
-        <div class="auth-switch">
-          <span *ngIf="mode === 'login'">
-            <span class="switch-text">Don’t have an account?</span>
-            <ion-button
-              fill="clear"
-              size="small"
-              type="button"
-              class="switch-link"
-              (click)="setMode('register')"
-            >
-              Register
-            </ion-button>
-          </span>
-
-          <span *ngIf="mode === 'register'">
-            <span class="switch-text">Already have an account?</span>
-            <ion-button
-              fill="clear"
-              size="small"
-              type="button"
-              class="switch-link"
-              (click)="setMode('login')"
-            >
-              Login
-            </ion-button>
-          </span>
+        <div class="auth-toggle">
+          <p>
+            {{ mode === 'login' ? "Don't have an account?" : "Already have an
+            account?" }}
+            <a (click)="setMode(mode === 'login' ? 'register' : 'login')">
+              {{ mode === 'login' ? 'Register' : 'Login' }}
+            </a>
+          </p>
         </div>
       </form>
     </div>

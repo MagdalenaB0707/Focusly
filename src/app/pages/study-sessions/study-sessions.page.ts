@@ -16,11 +16,16 @@ import {
   IonNote,
   IonButton,
   IonInput,
+  IonFab,
+  IonFabButton,
   IonSelect,
   IonSelectOption,
+  IonCardContent,
+  IonModal,
   IonDatetime,
   IonTextarea,
   IonIcon,
+  IonCard,
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -44,10 +49,15 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
   imports: [
     CommonModule,
     FormsModule,
+    IonFab,
+    IonFabButton,
     IonHeader,
     IonToolbar,
     IonTitle,
+    IonModal,
     IonButtons,
+    IonCard,
+    IonCardContent,
     IonMenuButton,
     RouterLink,
     IonIcon,
@@ -75,6 +85,13 @@ export class StudySessionsPage implements OnInit, OnDestroy {
   deletingId: string | null = null;
   uiError: string | null = null;
 
+  formOpen = false;
+  actionsOpen = false;
+  formMode: 'create' | 'edit' = 'create';
+  selected: StudySession | null = null;
+  editingId: string | null = null;
+  updating = false;
+
   form: {
     targetType: SessionTargetType;
     targetId: string;
@@ -97,6 +114,94 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     private activitiesService: ActivitiesService,
     private studySessionsService: StudySessionsService,
   ) {}
+
+  openCreate() {
+    this.uiError = null;
+    this.formMode = 'create';
+    this.form = {
+      targetType: 'course',
+      targetId: '',
+      durationHours: 0,
+      durationMins: 0,
+      notes: '',
+    };
+    this.formOpen = true;
+  }
+
+  openActions(s: StudySession) {
+    this.selected = s;
+    this.actionsOpen = true;
+  }
+
+  openEditFromActions() {
+    if (!this.selected) return;
+    this.actionsOpen = false;
+    this.formMode = 'edit';
+    this.editingId = this.selected.id;
+
+    // Pretvaramo ukupne minute nazad u sate i minute za formu
+    const h = Math.floor(this.selected.durationMinutes / 60);
+    const m = this.selected.durationMinutes % 60;
+
+    this.form = {
+      targetType: this.selected.targetType,
+      targetId: this.selected.targetId,
+      durationHours: h,
+      durationMins: m,
+      notes: this.selected.notes ?? '',
+    };
+    this.formOpen = true;
+  }
+
+  submitForm() {
+    if (this.formMode === 'create') {
+      this.createSession();
+    } else {
+      this.updateSession();
+    }
+  }
+
+  updateSession() {
+    if (!this.editingId) return;
+    this.uiError = null;
+    const durationMinutes =
+      Number(this.form.durationHours) * 60 + Number(this.form.durationMins);
+
+    if (durationMinutes <= 0) {
+      this.uiError = 'Invalid duration.';
+      return;
+    }
+
+    this.updating = true;
+    this.studySessionsService
+      .update(this.editingId, {
+        durationMinutes,
+        notes: this.form.notes.trim() || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.loadSessions(); // Najsigurnije da osvežiš listu
+          this.updating = false;
+          this.closeForm();
+        },
+        error: () => {
+          this.uiError = 'Update failed.';
+          this.updating = false;
+        },
+      });
+  }
+
+  confirmDelete() {
+    if (this.selected) {
+      this.deleteSession(this.selected.id);
+      this.actionsOpen = false;
+    }
+  }
+
+  closeForm() {
+    this.formOpen = false;
+    this.editingId = null;
+  }
 
   ngOnInit() {
     this.loadCourses();
@@ -202,6 +307,8 @@ export class StudySessionsPage implements OnInit, OnDestroy {
           this.form.durationHours = 0;
           this.form.durationMins = 0;
           this.form.notes = '';
+
+          this.closeForm();
         },
         error: (e) => {
           console.error(e);
@@ -254,7 +361,6 @@ export class StudySessionsPage implements OnInit, OnDestroy {
     return new Date(ms).toLocaleString();
   }
 
-  editingId: string | null = null;
   savingId: string | null = null;
 
   editForm: { durationMinutes: number | null; notes: string } = {

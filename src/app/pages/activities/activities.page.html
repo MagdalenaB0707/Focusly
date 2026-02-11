@@ -1,138 +1,178 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Activities</ion-title>
-
-    <ion-buttons slot="end">
-      <ion-button fill="clear" [routerLink]="['/tabs/data-room']" aria-label="Data Room">
+  <ion-toolbar class="act-toolbar">
+    <ion-buttons slot="start">
+      <ion-button
+        type="button"
+        fill="clear"
+        class="icon-btn"
+        [routerLink]="['/data-room']"
+        aria-label="Data Room"
+      >
         <ion-icon name="folder-open-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
+
+    <ion-title class="act-title">Activities</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="page-grid">
+<ion-content fullscreen class="ion-padding">
+  <div class="wrap">
+    <div *ngIf="loading" class="center">
+      <ion-spinner></ion-spinner>
+    </div>
 
-    <section class="panel panel--dark">
-      <div class="panel-head">
-        <div>
-          <h2 class="panel-title">Your activities</h2>
-          <p class="panel-subtitle">Edit / Delete anytime</p>
-        </div>
-      </div>
+    <ion-note
+      *ngIf="!loading && !uiError && activities.length === 0"
+      class="empty"
+    >
+      No activities yet. Tap <b>+</b> to add one.
+    </ion-note>
 
-      <div class="divider"></div>
+    <ion-note color="danger" *ngIf="uiError" class="err">
+      {{ uiError }}
+    </ion-note>
 
-      <div *ngIf="loading" class="center">
-        <ion-spinner></ion-spinner>
-      </div>
+    <div class="list" *ngIf="!loading && activities.length > 0">
+      <ion-card
+        class="a-card"
+        *ngFor="let a of activities; trackBy: trackByActivityId"
+        (click)="openActions(a)"
+      >
+        <ion-card-content class="a-card__content">
+          <div class="a-card__main">
+            <div class="a-title">{{ a.title }}</div>
+            <div class="a-desc" *ngIf="a.description">{{ a.description }}</div>
+          </div>
 
-      <ion-note *ngIf="!loading && !uiError && activities.length === 0" class="hint">
-        No activities yet.
-      </ion-note>
+          <ion-icon class="chev" name="chevron-forward-outline"></ion-icon>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
 
-      <ion-list *ngIf="!loading && !uiError && activities.length > 0">
-        <ion-item *ngFor="let a of activities; trackBy: trackByActivityId" lines="full">
-          <ion-label>
+  <ion-modal
+    [isOpen]="formOpen"
+    (didDismiss)="closeForm()"
+    [initialBreakpoint]="0.72"
+    [breakpoints]="[0,0.72,0.9,1]"
+    [backdropBreakpoint]="0.72"
+    class="act-modal"
+  >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title
+            >{{ formMode === 'create' ? 'New activity' : 'Edit activity'
+            }}</ion-title
+          >
+          <ion-buttons slot="end">
+            <ion-button type="button" fill="clear" (click)="closeForm()"
+              >Close</ion-button
+            >
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
 
-            <ng-container *ngIf="editingId !== a.id; else editTpl">
-              <h2>{{ a.title }}</h2>
-              <p *ngIf="a.description">{{ a.description }}</p>
-            </ng-container>
+      <ion-content class="ion-padding">
+        <div class="sheet">
+          <ion-item>
+            <ion-input
+              label="Title"
+              labelPlacement="stacked"
+              [(ngModel)]="form.title"
+              placeholder="e.g. Reading, Gym, Coding..."
+            ></ion-input>
+          </ion-item>
 
-            <ng-template #editTpl>
-              <ion-item lines="none">
-                <ion-input
-                  label="Title"
-                  labelPlacement="stacked"
-                  [(ngModel)]="editForm.title"
-                ></ion-input>
-              </ion-item>
+          <ion-item>
+            <ion-textarea
+              label="Description (optional)"
+              labelPlacement="stacked"
+              autoGrow="true"
+              [(ngModel)]="form.description"
+              placeholder="Short note..."
+            ></ion-textarea>
+          </ion-item>
 
-              <ion-item lines="none">
-                <ion-textarea
-                  label="Description"
-                  labelPlacement="stacked"
-                  autoGrow="true"
-                  [(ngModel)]="editForm.description"
-                ></ion-textarea>
-              </ion-item>
-
-              <div class="actions">
-                <ion-button size="small" (click)="saveEdit(a)" [disabled]="updating">
-                  {{ updating ? 'Saving...' : 'Save' }}
-                </ion-button>
-
-                <ion-button size="small" fill="outline" (click)="cancelEdit()" [disabled]="updating">
-                  Cancel
-                </ion-button>
-              </div>
-            </ng-template>
-
-          </ion-label>
+          <ion-note color="danger" *ngIf="uiError" class="err">
+            {{ uiError }}
+          </ion-note>
 
           <ion-button
-            slot="end"
-            fill="clear"
-            (click)="startEdit(a)"
-            [disabled]="editingId === a.id || deletingId === a.id"
+            type="button"
+            expand="block"
+            (click)="submitForm()"
+            [disabled]="saving || updating"
+          >
+            {{ (saving || updating) ? 'Please wait...' : (formMode === 'create'
+            ? 'Create' : 'Save changes') }}
+          </ion-button>
+
+          <ion-button
+            *ngIf="formMode === 'edit' && editingId"
+            type="button"
+            expand="block"
+            fill="outline"
+            color="danger"
+            (click)="deleteActivity(editingId)"
+            [disabled]="deletingId === editingId"
+          >
+            {{ deletingId === editingId ? 'Deleting...' : 'Delete' }}
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal
+    [isOpen]="actionsOpen"
+    (didDismiss)="closeActions()"
+    [initialBreakpoint]="0.35"
+    [breakpoints]="[0,0.35,0.5]"
+    [backdropBreakpoint]="0.35"
+    class="act-modal"
+  >
+    <ng-template>
+      <ion-content class="ion-padding">
+        <div class="actions-sheet">
+          <div class="actions-title">{{ selected?.title }}</div>
+
+          <ion-button
+            type="button"
+            expand="block"
+            (click)="openEditFromActions()"
           >
             Edit
           </ion-button>
 
           <ion-button
-            slot="end"
-            fill="clear"
+            type="button"
+            expand="block"
+            fill="outline"
             color="danger"
-            (click)="deleteActivity(a.id)"
-            [disabled]="deletingId === a.id || editingId === a.id"
+            (click)="selectedId && deleteActivity(selectedId)"
+            [disabled]="!selectedId || deletingId === selectedId"
           >
-            {{ deletingId === a.id ? '...' : 'Delete' }}
+            {{ selectedId && deletingId === selectedId ? 'Deleting...' :
+            'Delete' }}
           </ion-button>
-        </ion-item>
-      </ion-list>
-    </section>
 
-    <aside class="panel panel--accent">
-      <div class="panel-head">
-        <div>
-          <h2 class="panel-title">Create New Activity</h2>
-          <p class="panel-subtitle">Add a new activity</p>
+          <ion-button
+            type="button"
+            expand="block"
+            fill="clear"
+            (click)="closeActions()"
+            >Cancel</ion-button
+          >
         </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="panel-body">
-        <ion-item>
-          <ion-input
-            label="Title"
-            labelPlacement="stacked"
-            placeholder="e.g. Reading, Coding, Gym..."
-            [(ngModel)]="form.title"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-textarea
-            label="Description (optional)"
-            labelPlacement="stacked"
-            placeholder="Short note..."
-            autoGrow="true"
-            [(ngModel)]="form.description"
-          ></ion-textarea>
-        </ion-item>
-
-        <ion-button expand="block" (click)="createActivity()" [disabled]="saving">
-          {{ saving ? 'Saving...' : 'Save activity' }}
-        </ion-button>
-
-        <ion-note color="danger" *ngIf="uiError" class="note-error">
-          {{ uiError }}
-        </ion-note>
-      </div>
-
-    </aside>
-
-  </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+  <!-- FLOATING PLUS BUTTON -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreate()" class="add-fab">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

@@ -19,6 +19,11 @@ import {
   IonSpinner,
   IonNote,
   IonIcon,
+  IonCard,
+  IonCardContent,
+  IonModal,
+  IonFab,
+  IonFabButton,
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -53,7 +58,11 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
     IonSelectOption,
     IonInput,
     IonButton,
-
+    IonCard,
+    IonCardContent,
+    IonModal,
+    IonFab,
+    IonFabButton,
     IonList,
     IonLabel,
     IonSpinner,
@@ -70,6 +79,33 @@ export class GoalsPage implements OnInit, OnDestroy {
   saving = false;
   deletingId: string | null = null;
   uiError: string | null = null;
+  // modals
+  formOpen = false;
+  actionsOpen = false;
+  selected: Goal | null = null;
+
+  get selectedId(): string | null {
+    return this.selected?.id ?? null;
+  }
+
+  openCreate() {
+    this.uiError = null;
+    this.formOpen = true;
+  }
+
+  closeForm() {
+    this.formOpen = false;
+  }
+
+  openActions(g: Goal) {
+    this.selected = g;
+    this.actionsOpen = true;
+  }
+
+  closeActions() {
+    this.actionsOpen = false;
+    this.selected = null;
+  }
 
   form = {
     targetType: 'activity' as GoalTargetType,
@@ -230,6 +266,8 @@ export class GoalsPage implements OnInit, OnDestroy {
           this.form.targetId = '';
           this.form.targetHours = 0;
           this.form.targetMins = 0;
+
+          this.closeForm();
         },
         error: (e) => {
           console.error(e);

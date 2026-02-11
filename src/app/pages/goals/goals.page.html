@@ -1,144 +1,198 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Goals</ion-title>
-
-    <ion-buttons slot="end">
+  <ion-toolbar class="act-toolbar">
+    <ion-buttons slot="start">
       <ion-button
         fill="clear"
-        [routerLink]="['/tabs/data-room']"
+        class="icon-btn"
+        [routerLink]="['/data-room']"
         aria-label="Data Room"
       >
         <ion-icon name="folder-open-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
+
+    <ion-title class="act-title">Goals</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <div class="page-grid">
-    <section class="panel panel--dark">
-      <div class="panel-head">
-        <div>
-          <h2 class="panel-title">Your goals</h2>
-          <p class="panel-subtitle">Progress is calculated from sessions</p>
+
+<ion-content fullscreen class="ion-padding">
+  <div class="wrap">
+    <div *ngIf="loading" class="center">
+      <ion-spinner></ion-spinner>
+    </div>
+
+    <ion-note *ngIf="!loading && !uiError && goals.length === 0" class="empty">
+      No goals yet. Tap <b>+</b> to create one.
+    </ion-note>
+
+    <ion-note color="danger" *ngIf="uiError" class="err">
+      {{ uiError }}
+    </ion-note>
+
+    <div class="list" *ngIf="!loading && !uiError && goals.length > 0">
+      <ion-card
+        class="g-card"
+        *ngFor="let g of goals; trackBy: trackByGoalId"
+        [class.g-card--course]="g.targetType === 'course'"
+        [class.g-card--activity]="g.targetType === 'activity'"
+        (click)="openActions(g)"
+      >
+        <ion-card-content class="g-card__content">
+          <div class="g-main">
+            <div class="g-top">
+              <span class="g-badge">
+                <ion-icon
+                  class="g-badge-icon"
+                  [name]="g.targetType === 'course' ? 'book-outline' : 'flash-outline'"
+                ></ion-icon>
+                {{ g.targetType === 'course' ? 'Course' : 'Activity' }}
+              </span>
+
+              <span class="g-pct">{{ getGoalProgress(g).pct }}%</span>
+            </div>
+
+            <div class="g-title">{{ labelForGoal(g) }}</div>
+
+            <div class="g-line">
+              Progress: {{ formatMinutes(getGoalProgress(g).done) }} /
+              {{ formatMinutes(getGoalProgress(g).target) }}
+              • Remaining: {{ formatMinutes(getGoalProgress(g).remaining) }}
+            </div>
+          </div>
+
+          <ion-icon class="chev" name="chevron-forward-outline"></ion-icon>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT (ovde samo CREATE) -->
+  <ion-modal
+    [isOpen]="formOpen"
+    (didDismiss)="closeForm()"
+    [initialBreakpoint]="0.72"
+    [breakpoints]="[0,0.72,0.9,1]"
+    [backdropBreakpoint]="0.72"
+    class="act-modal"
+  >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>New goal</ion-title>
+          <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeForm()">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <div class="sheet">
+          <ion-item>
+            <ion-select
+              label="Goal for"
+              labelPlacement="stacked"
+              [(ngModel)]="form.targetType"
+              (ionChange)="onTargetTypeChange()"
+            >
+              <ion-select-option value="activity">Activity</ion-select-option>
+              <ion-select-option value="course">Course</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-select
+              label="Target"
+              labelPlacement="stacked"
+              placeholder="Select..."
+              [(ngModel)]="form.targetId"
+            >
+              <ion-select-option
+                *ngFor="let a of activities; trackBy: trackByActivityId"
+                [value]="a.id"
+                [disabled]="form.targetType !== 'activity'"
+              >
+                {{ a.title }}
+              </ion-select-option>
+
+              <ion-select-option
+                *ngFor="let c of courses; trackBy: trackByCourseId"
+                [value]="c.id"
+                [disabled]="form.targetType !== 'course'"
+              >
+                {{ c.title }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <div class="two-col">
+            <ion-item>
+              <ion-input
+                label="Hours"
+                labelPlacement="stacked"
+                type="number"
+                min="0"
+                [(ngModel)]="form.targetHours"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                label="Minutes"
+                labelPlacement="stacked"
+                type="number"
+                min="0"
+                max="59"
+                [(ngModel)]="form.targetMins"
+              ></ion-input>
+            </ion-item>
+          </div>
+
+          <ion-note color="danger" *ngIf="uiError" class="err">
+            {{ uiError }}
+          </ion-note>
+
+          <ion-button expand="block" (click)="createGoal()" [disabled]="saving">
+            {{ saving ? 'Saving...' : 'Save goal' }}
+          </ion-button>
         </div>
-      </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
-      <div class="divider"></div>
-
-      <div *ngIf="loading" class="center">
-        <ion-spinner></ion-spinner>
-      </div>
-
-      <ion-note *ngIf="!loading && !uiError && goals.length === 0" class="hint">
-        No goals yet.
-      </ion-note>
-
-      <ion-list *ngIf="!loading && !uiError && goals.length > 0">
-        <ion-item *ngFor="let g of goals; trackBy: trackByGoalId" lines="full">
-          <ion-label>
-            <h2>{{ labelForGoal(g) }}</h2>
-            <p>
-              Progress: {{ formatMinutes(getGoalProgress(g).done) }} / {{
-              formatMinutes(getGoalProgress(g).target) }} ({{
-              getGoalProgress(g).pct }}%) • Remaining: {{
-              formatMinutes(getGoalProgress(g).remaining) }}
-            </p>
-          </ion-label>
+  <!-- ACTIONS MODAL -->
+  <ion-modal
+    [isOpen]="actionsOpen"
+    (didDismiss)="closeActions()"
+    [initialBreakpoint]="0.35"
+    [breakpoints]="[0,0.35,0.5]"
+    [backdropBreakpoint]="0.35"
+    class="act-modal"
+  >
+    <ng-template>
+      <ion-content class="ion-padding">
+        <div class="actions-sheet">
+          <div class="actions-title">{{ selected ? labelForGoal(selected) : '' }}</div>
 
           <ion-button
-            slot="end"
-            fill="clear"
+            expand="block"
+            fill="outline"
             color="danger"
-            (click)="deleteGoal(g.id)"
-            [disabled]="deletingId === g.id"
+            (click)="selectedId && deleteGoal(selectedId)"
+            [disabled]="!selectedId || deletingId === selectedId"
           >
-            {{ deletingId === g.id ? '...' : 'Delete' }}
+            {{ selectedId && deletingId === selectedId ? 'Deleting...' : 'Delete' }}
           </ion-button>
-        </ion-item>
-      </ion-list>
 
-      <ion-note color="danger" *ngIf="uiError" class="note-error">
-        {{ uiError }}
-      </ion-note>
-    </section>
-
-    <aside class="panel panel--accent">
-      <div class="panel-head">
-        <div>
-          <h2 class="panel-title">Create goal</h2>
-          <p class="panel-subtitle">Pick Target + Goal Time</p>
+          <ion-button expand="block" fill="clear" (click)="closeActions()">Cancel</ion-button>
         </div>
-      </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
-      <div class="divider"></div>
-
-      <ion-item>
-        <ion-select
-          label="Goal for"
-          labelPlacement="stacked"
-          [(ngModel)]="form.targetType"
-          (ionChange)="onTargetTypeChange()"
-        >
-          <ion-select-option value="activity">Activity</ion-select-option>
-          <ion-select-option value="course">Course</ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-select
-          label="Target"
-          labelPlacement="stacked"
-          placeholder="Select..."
-          [(ngModel)]="form.targetId"
-        >
-          <ion-select-option
-            *ngFor="let a of activities; trackBy: trackByActivityId"
-            [value]="a.id"
-            [disabled]="form.targetType !== 'activity'"
-          >
-            {{ a.title }}
-          </ion-select-option>
-
-          <ion-select-option
-            *ngFor="let c of courses; trackBy: trackByCourseId"
-            [value]="c.id"
-            [disabled]="form.targetType !== 'course'"
-          >
-            {{ c.title }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <div class="two-col">
-        <ion-item>
-          <ion-input
-            label="Hours"
-            labelPlacement="stacked"
-            type="number"
-            min="0"
-            [(ngModel)]="form.targetHours"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-input
-            label="Minutes"
-            labelPlacement="stacked"
-            type="number"
-            min="0"
-            max="59"
-            [(ngModel)]="form.targetMins"
-          ></ion-input>
-        </ion-item>
-      </div>
-
-      <ion-button expand="block" (click)="createGoal()" [disabled]="saving">
-        {{ saving ? 'Saving...' : 'Save goal' }}
-      </ion-button>
-
-      <ion-note color="danger" *ngIf="uiError" class="note-error">
-        {{ uiError }}
-      </ion-note>
-    </aside>
-  </div>
+  <!-- FAB -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreate()" class="add-fab" aria-label="Add Goal">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

@@ -1,11 +1,12 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Study Sessions</ion-title>
+  <ion-toolbar class="act-toolbar">
+    <ion-title class="act-title">Study Sessions</ion-title>
 
-    <ion-buttons slot="end">
+    <ion-buttons slot="start">
       <ion-button
         fill="clear"
-        [routerLink]="['/tabs/data-room']"
+        class="icon-btn"
+        [routerLink]="['/data-room']"
         aria-label="Data Room"
       >
         <ion-icon name="folder-open-outline"></ion-icon>
@@ -13,197 +14,189 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <div class="page-grid">
-    <section class="panel panel--dark">
-      <div class="panel-head">
-        <div>
-          <h2 class="panel-title">Sessions</h2>
-          <p class="panel-subtitle">Newest first</p>
-        </div>
-      </div>
 
-      <div class="divider"></div>
+<ion-content fullscreen class="ion-padding">
+  <div class="wrap">
+    <div *ngIf="loading" class="center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
 
-      <div *ngIf="loading" class="center">
-        <ion-spinner></ion-spinner>
-      </div>
+    <ion-note *ngIf="!loading && sessions.length === 0" class="empty">
+      No sessions yet. Tap <b>+</b> to start tracking.
+    </ion-note>
 
-      <ion-note *ngIf="!loading && sessions.length === 0" class="hint">
-        No sessions yet.
-      </ion-note>
-
-      <ion-list *ngIf="!loading && sessions.length > 0">
-        <div *ngFor="let s of sessions; trackBy: trackBySessionId">
-          <ion-item lines="full">
-            <ion-label>
-              <h2>
-                {{ formatDateTime(s.startedAt) }} — {{
-                formatMinutes(s.durationMinutes) }}
-              </h2>
-
-              <p>{{ s.targetType }}: {{ targetLabel(s) }}</p>
-              <p *ngIf="s.notes">{{ s.notes }}</p>
-            </ion-label>
-
-            <ion-button
-              slot="end"
-              fill="clear"
-              (click)="startEdit(s)"
-              *ngIf="editingId !== s.id"
-            >
-              Edit
-            </ion-button>
-
-            <ion-button
-              slot="end"
-              fill="clear"
-              color="danger"
-              (click)="deleteSession(s.id)"
-              [disabled]="deletingId === s.id || savingId === s.id"
-              *ngIf="editingId !== s.id"
-            >
-              {{ deletingId === s.id ? '...' : 'Delete' }}
-            </ion-button>
-          </ion-item>
-
-          <div *ngIf="editingId === s.id" class="inline-edit">
-            <ion-item>
-              <ion-input
-                label="Duration (minutes)"
-                labelPlacement="stacked"
-                type="number"
-                [(ngModel)]="editForm.durationMinutes"
-              ></ion-input>
-            </ion-item>
-
-            <ion-item>
-              <ion-textarea
-                label="Notes"
-                labelPlacement="stacked"
-                [(ngModel)]="editForm.notes"
-                autoGrow="true"
-              ></ion-textarea>
-            </ion-item>
-
-            <div class="actions">
-              <ion-button
-                expand="block"
-                (click)="saveEdit()"
-                [disabled]="savingId === s.id"
+    <div class="list" *ngIf="!loading && sessions.length > 0">
+      <ion-card
+        class="s-card"
+        [class.s-card--course]="s.targetType === 'course'"
+        [class.s-card--activity]="s.targetType === 'activity'"
+        *ngFor="let s of sessions; trackBy: trackBySessionId"
+        (click)="openActions(s)"
+      >
+        <ion-card-content class="s-card__content">
+          <div class="s-info">
+            <div class="s-meta">
+              <span
+                class="s-type"
+                [class.type-course]="s.targetType === 'course'"
               >
-                {{ savingId === s.id ? 'Saving...' : 'Save' }}
-              </ion-button>
+                {{ s.targetType }}
+              </span>
+              <span class="s-date">{{ formatDateTime(s.startedAt) }}</span>
+            </div>
+            <div class="s-title">{{ targetLabel(s) }}</div>
+            <div class="s-duration">
+              <ion-icon
+                [name]="s.targetType === 'course' ? 'book-outline' : 'flash-outline'"
+                class="s-type-icon"
+              ></ion-icon>
 
-              <ion-button
-                expand="block"
-                fill="outline"
-                (click)="cancelEdit()"
-                [disabled]="savingId === s.id"
-              >
-                Cancel
-              </ion-button>
+              {{ formatMinutes(s.durationMinutes) }}
             </div>
 
-            <ion-note color="danger" *ngIf="uiError" class="note-error">
-              {{ uiError }}
-            </ion-note>
+            <p class="s-notes" *ngIf="s.notes">{{ s.notes }}</p>
           </div>
-        </div>
-      </ion-list>
-
-      <ion-note color="danger" *ngIf="uiError" class="note-error">
-        {{ uiError }}
-      </ion-note>
-    </section>
-
-    <aside class="panel panel--accent">
-      <div class="panel-head">
-        <div>
-          <h2 class="panel-title">Create session</h2>
-          <p class="panel-subtitle">Pick target + time + duration</p>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <ion-item>
-        <ion-select
-          label="Type"
-          labelPlacement="stacked"
-          [(ngModel)]="form.targetType"
-          (ionChange)="onTargetTypeChange()"
-        >
-          <ion-select-option value="course">Course</ion-select-option>
-          <ion-select-option value="activity">Activity</ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-select
-          label="Target"
-          labelPlacement="stacked"
-          placeholder="Select..."
-          [(ngModel)]="form.targetId"
-        >
-          <ion-select-option
-            *ngFor="let c of courses; trackBy: trackByCourseId"
-            [value]="c.id"
-            [disabled]="form.targetType !== 'course'"
-          >
-            {{ c.title }}
-          </ion-select-option>
-
-          <ion-select-option
-            *ngFor="let a of activities; trackBy: trackByActivityId"
-            [value]="a.id"
-            [disabled]="form.targetType !== 'activity'"
-          >
-            {{ a.title }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <div class="two-col">
-        <ion-item>
-          <ion-input
-            label="Hours"
-            labelPlacement="stacked"
-            type="number"
-            min="0"
-            [(ngModel)]="form.durationHours"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-input
-            label="Minutes"
-            labelPlacement="stacked"
-            type="number"
-            min="0"
-            max="59"
-            [(ngModel)]="form.durationMins"
-          ></ion-input>
-        </ion-item>
-      </div>
-
-      <ion-item>
-        <ion-textarea
-          label="Notes"
-          labelPlacement="stacked"
-          [(ngModel)]="form.notes"
-          placeholder="Optional..."
-          autoGrow="true"
-        ></ion-textarea>
-      </ion-item>
-
-      <ion-button expand="block" (click)="createSession()" [disabled]="saving">
-        {{ saving ? 'Saving...' : 'Save session' }}
-      </ion-button>
-
-      <ion-note color="danger" *ngIf="uiError" class="note-error">
-        {{ uiError }}
-      </ion-note>
-    </aside>
+          <ion-icon class="chev" name="chevron-forward-outline"></ion-icon>
+        </ion-card-content>
+      </ion-card>
+    </div>
   </div>
+
+  <ion-modal
+    [isOpen]="formOpen"
+    (didDismiss)="closeForm()"
+    [initialBreakpoint]="0.75"
+    [breakpoints]="[0, 0.75, 1]"
+  >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title
+            >{{ formMode === 'create' ? 'New Session' : 'Edit Session'
+            }}</ion-title
+          >
+          <ion-buttons slot="end">
+            <ion-button (click)="closeForm()">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <div class="sheet-form">
+          <div *ngIf="formMode === 'create'">
+            <ion-item>
+              <ion-select
+                label="Type"
+                labelPlacement="stacked"
+                [(ngModel)]="form.targetType"
+                (ionChange)="onTargetTypeChange()"
+              >
+                <ion-select-option value="course">Course</ion-select-option>
+                <ion-select-option value="activity">Activity</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-select
+                label="Target"
+                labelPlacement="stacked"
+                placeholder="Select..."
+                [(ngModel)]="form.targetId"
+              >
+                <ion-select-option
+                  *ngFor="let c of courses"
+                  [value]="c.id"
+                  [disabled]="form.targetType !== 'course'"
+                  >{{ c.title }}</ion-select-option
+                >
+                <ion-select-option
+                  *ngFor="let a of activities"
+                  [value]="a.id"
+                  [disabled]="form.targetType !== 'activity'"
+                  >{{ a.title }}</ion-select-option
+                >
+              </ion-select>
+            </ion-item>
+          </div>
+
+          <div class="two-col">
+            <ion-item>
+              <ion-input
+                label="Hours"
+                labelPlacement="stacked"
+                type="number"
+                [(ngModel)]="form.durationHours"
+              ></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input
+                label="Minutes"
+                labelPlacement="stacked"
+                type="number"
+                [(ngModel)]="form.durationMins"
+              ></ion-input>
+            </ion-item>
+          </div>
+
+          <ion-item>
+            <ion-textarea
+              label="Notes"
+              labelPlacement="stacked"
+              [(ngModel)]="form.notes"
+              autoGrow="true"
+              placeholder="Optional notes..."
+            ></ion-textarea>
+          </ion-item>
+
+          <ion-note color="danger" *ngIf="uiError" class="err"
+            >{{ uiError }}</ion-note
+          >
+
+          <ion-button
+            expand="block"
+            (click)="submitForm()"
+            [disabled]="saving || updating"
+          >
+            {{ (saving || updating) ? 'Saving...' : (formMode === 'create' ?
+            'Save Session' : 'Update Session') }}
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal
+    [isOpen]="actionsOpen"
+    (didDismiss)="actionsOpen = false"
+    [initialBreakpoint]="0.25"
+    [breakpoints]="[0, 0.25]"
+  >
+    <ng-template>
+      <div class="ion-padding action-sheet-custom">
+        <h3 class="action-title">
+          {{ selected ? targetLabel(selected) : '' }}
+        </h3>
+        <ion-button expand="block" (click)="openEditFromActions()"
+          >Edit</ion-button
+        >
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="danger"
+          (click)="confirmDelete()"
+        >
+          {{ deletingId ? 'Deleting...' : 'Delete' }}
+        </ion-button>
+      </div>
+    </ng-template>
+  </ion-modal>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button
+      (click)="openCreate()"
+      class="add-fab"
+      aria-label="Add Session"
+    >
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

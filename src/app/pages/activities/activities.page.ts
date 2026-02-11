@@ -13,15 +13,20 @@ import {
   IonInput,
   IonTextarea,
   IonButton,
-  IonList,
-  IonLabel,
   IonSpinner,
   IonNote,
+  IonModal,
+  IonCard,
+  IonCardContent,
+  IonFab,
+  IonFabButton,
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
 
 import { Activity } from 'src/app/models/activity.model';
 import { ActivitiesService } from 'src/app/services/activities/activities.services';
+
+type FormMode = 'create' | 'edit';
 
 @Component({
   selector: 'app-activities',
@@ -32,44 +37,47 @@ import { ActivitiesService } from 'src/app/services/activities/activities.servic
     CommonModule,
     FormsModule,
     RouterLink,
-    IonIcon,
+    IonFab,
+    IonFabButton,
+
     IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,
+    IonIcon,
 
     IonContent,
+    IonNote,
+    IonSpinner,
+
+    IonCard,
+    IonCardContent,
+
+    IonModal,
     IonItem,
     IonInput,
     IonTextarea,
     IonButton,
-
-    IonList,
-    IonLabel,
-    IonSpinner,
-    IonNote,
   ],
 })
 export class ActivitiesPage implements OnInit, OnDestroy {
   activities: Activity[] = [];
   loading = false;
   saving = false;
+  updating = false;
   deletingId: string | null = null;
   uiError: string | null = null;
 
-  form = {
-    title: '',
-    description: '',
-  };
+  // actions
+  actionsOpen = false;
+  selected: Activity | null = null;
 
+  // form modal
+  formOpen = false;
+  formMode: FormMode = 'create';
   editingId: string | null = null;
 
-  editForm = {
-    title: '',
-    description: '',
-  };
-
-  updating = false;
+  form = { title: '', description: '' };
 
   private destroy$ = new Subject<void>();
 
@@ -83,54 +91,6 @@ export class ActivitiesPage implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  startEdit(a: Activity) {
-    this.editingId = a.id;
-    this.editForm.title = a.title;
-    this.editForm.description = a.description ?? '';
-  }
-
-  cancelEdit() {
-    this.editingId = null;
-    this.editForm.title = '';
-    this.editForm.description = '';
-  }
-
-  saveEdit(a: Activity) {
-    this.uiError = null;
-
-    const title = this.editForm.title.trim();
-    const description = this.editForm.description.trim();
-
-    if (!title) {
-      this.uiError = 'Title is required.';
-      return;
-    }
-
-    this.updating = true;
-
-    this.activitiesService
-      .update(a.id, {
-        title,
-        description: description || undefined,
-      })
-      .subscribe({
-        next: () => {
-          this.activities = this.activities.map((x) =>
-            x.id === a.id
-              ? { ...x, title, description: description || undefined }
-              : x,
-          );
-
-          this.updating = false;
-          this.cancelEdit();
-        },
-        error: (e) => {
-          console.error(e);
-          this.uiError = 'Update failed.';
-          this.updating = false;
-        },
-      });
-  }
 
   loadActivities() {
     this.loading = true;
@@ -141,18 +101,61 @@ export class ActivitiesPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.activities = data;
+          this.activities = [...data].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
           this.loading = false;
         },
-        error: (error) => {
-          console.error('Failed to load activities', error);
+        error: (e) => {
+          console.error(e);
           this.uiError = 'Failed to load activities.';
           this.loading = false;
         },
       });
   }
 
-  createActivity() {
+  // ---------- Create ----------
+  openCreate() {
+    this.uiError = null;
+    this.formMode = 'create';
+    this.editingId = null;
+    this.form = { title: '', description: '' };
+    this.formOpen = true;
+  }
+
+  // ---------- Actions ----------
+  openActions(a: Activity) {
+    this.selected = a;
+    this.actionsOpen = true;
+  }
+
+  closeActions() {
+    this.actionsOpen = false;
+    this.selected = null;
+  }
+
+  openEditFromActions() {
+    if (!this.selected) return;
+    this.actionsOpen = false;
+
+    this.uiError = null;
+    this.formMode = 'edit';
+    this.editingId = this.selected.id;
+    this.form = {
+      title: this.selected.title,
+      description: this.selected.description ?? '',
+    };
+    this.formOpen = true;
+  }
+
+  // ---------- Form submit ----------
+  closeForm() {
+    this.formOpen = false;
+    this.uiError = null;
+    this.formMode = 'create';
+    this.editingId = null;
+    this.form = { title: '', description: '' };
+  }
+
+  submitForm() {
     this.uiError = null;
 
     const title = this.form.title.trim();
@@ -163,30 +166,61 @@ export class ActivitiesPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
+    if (this.formMode === 'create') {
+      this.saving = true;
+      this.activitiesService
+        .create({ title, description: description || undefined, createdAt: Date.now() })
+        .subscribe({
+          next: (created) => {
+            this.activities = [created, ...this.activities];
+            this.saving = false;
+            this.closeForm();
+          },
+          error: (e) => {
+            console.error(e);
+            this.uiError = 'Create failed.';
+            this.saving = false;
+          },
+        });
+      return;
+    }
+
+    // edit
+    if (!this.editingId) return;
+
+    this.updating = true;
+    const id = this.editingId;
 
     this.activitiesService
-      .create({
-        title,
-        description: description || undefined,
-        createdAt: Date.now(),
-      })
+      .update(id, { title, description: description || undefined })
       .subscribe({
-        next: (created) => {
-          this.activities = [created, ...this.activities];
-          this.saving = false;
-          this.form.title = '';
-          this.form.description = '';
+        next: () => {
+          this.activities = this.activities.map((x) =>
+            x.id === id ? { ...x, title, description: description || undefined } : x
+          );
+          this.updating = false;
+          this.closeForm();
         },
         error: (e) => {
           console.error(e);
-          this.uiError = 'Create failed.';
-          this.saving = false;
+          this.uiError = 'Update failed.';
+          this.updating = false;
         },
       });
   }
 
-  deleteActivity(id: string) {
+  // ---------- Delete ----------
+  confirmDeleteSelected() {
+    if (!this.selectedId) return;
+    this.deleteActivity(this.selectedId);
+  }
+
+  confirmDeleteFromModal() {
+    if (!this.editingId) return;
+    this.deleteActivity(this.editingId);
+  }
+
+   deleteActivity(id: string) {
     this.uiError = null;
     this.deletingId = id;
 
@@ -194,6 +228,9 @@ export class ActivitiesPage implements OnInit, OnDestroy {
       next: () => {
         this.activities = this.activities.filter((a) => a.id !== id);
         this.deletingId = null;
+        this.actionsOpen = false;
+        // ako brišeš iz edit modala:
+        if (this.formOpen && this.editingId === id) this.closeForm();
       },
       error: (e) => {
         console.error(e);
@@ -202,6 +239,10 @@ export class ActivitiesPage implements OnInit, OnDestroy {
       },
     });
   }
+  get selectedId(): string | null{
+  return this.selected?.id ?? null;
+}
+
 
   trackByActivityId(_: number, a: Activity) {
     return a.id;

@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+ion-tabs {
+  position: relative;
+}
+
+/* Tab bar uvek iznad */
+ion-tab-bar {
+  position: relative;
+  z-index: 10;
+}
+
+/* Outlet ispod taba (ne iznad svega) */
+ion-router-outlet {
+  position: relative;
+  z-index: 1;
+}

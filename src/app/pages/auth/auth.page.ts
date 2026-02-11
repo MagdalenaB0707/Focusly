@@ -12,6 +12,7 @@ import {
   IonButton,
   IonNote,
   IonLabel,
+  IonSpinner
 } from '@ionic/angular/standalone';
 
 import { AuthService } from 'src/app/services/auth/auth.services';
@@ -36,6 +37,7 @@ type Mode = 'login' | 'register';
     IonButton,
     IonNote,
     IonLabel,
+    IonSpinner
   ],
 })
 export class AuthPage {

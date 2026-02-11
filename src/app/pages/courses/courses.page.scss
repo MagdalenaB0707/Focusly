@@ -1,95 +1,146 @@
 :host {
-  --bg: #0e0f12;
-  --border: rgba(255, 255, 255, 0.10);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.65);
-  --accent: #38bdf8; 
-  --danger: #ef4444;
+  display: block;
 }
 
-ion-content { --background: var(--bg); }
+/* ---------- Toolbar / Header ---------- */
 
-.page-grid{
-  display:grid;
-  grid-template-columns: 1fr 0.43fr;
-  gap:16px;
-  align-items:start;
-  max-width:1100px;
-  margin:0 auto;
+.act-toolbar {
+  --min-height: 56px;
+  --background: var(--ion-background-color, #0f1115);
+  box-shadow: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.panel{
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:14px;
-  backdrop-filter: blur(10px);
+.act-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
 }
 
-.panel--dark{
-  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+/* icon dugmići (Data room) */
+.icon-btn {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --color: rgba(255, 255, 255, 0.85);
 }
 
-.panel--accent{
-  background: linear-gradient(180deg, rgba(56,189,248,0.18), rgba(255,255,255,0.03));
+/* plus dugme kao mali “pill” */
+.plus-btn {
+  --background: rgba(120, 100, 255, 0.16);
+  --color: rgba(255, 255, 255, 0.92);
+  --border-radius: 12px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  height: 36px;
 }
 
-.panel-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
+/* ---------- Content wrapper ---------- */
+
+.wrap {
+  max-width: 520px; /* uža lista */
+  margin: 0 auto;
+  padding-top: 10px;
 }
 
-.panel-title{
-  margin:0;
-  font-size:16px;
-  font-weight:800;
-  color:var(--text);
+/* ---------- States ---------- */
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
 }
 
-.panel-subtitle{
-  margin:4px 0 0 0;
-  font-size:13px;
-  color:var(--muted);
+.empty {
+  display: block;
+  text-align: center;
+  margin-top: 40px;
+  opacity: 0.8;
 }
 
-.divider{
-  height:1px;
-  background:var(--border);
-  margin:12px 0;
-  opacity:0.7;
+.err {
+  display: block;
+  margin-top: 12px;
 }
 
-.center{ display:flex; justify-content:center; padding:14px 0; }
+/* ---------- List ---------- */
 
-.hint{
-  display:block;
-  color:var(--muted);
-  font-size:13px;
-  padding:10px 2px;
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-.note-error{ display:block; margin-top:10px; }
+/* ---------- Card ---------- */
 
-ion-item{
-  --background: rgba(0,0,0,0.22);
-  --border-color: rgba(255,255,255,0.10);
-  border-radius:14px;
-  margin-bottom:10px;
-}
-ion-item::part(native){ border-radius:14px; }
-
-ion-select, ion-input{
-  --color: var(--text);
-  --placeholder-color: rgba(255,255,255,0.45);
+.a-card {
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border-left: 3px solid rgba(120, 100, 255, 0.75); /* mala boja */
 }
 
-ion-button{
-  --border-radius:14px;
-  text-transform:none;
-  font-weight:800;
+.a-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px;
 }
 
-@media (max-width: 900px){
-  .page-grid{ grid-template-columns: 1fr; }
+.a-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.a-desc {
+  margin-top: 3px;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.chev {
+  font-size: 18px;
+  opacity: 0.55;
+}
+
+/* ---------- Modal look ---------- */
+
+.act-modal::part(content) {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+/* malo prostora pri dnu u sheet-u da ne “seče” dugme */
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 20px;
+}
+
+.actions-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.actions-title {
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.add-fab {
+  --background: #7c6cff;
+  --background-activated: #6a5ae0;
+  --color: #ffffff;
+  margin-bottom: 64px;
+  margin-right: 8px;
+}
+.a-meta {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.7;
 }

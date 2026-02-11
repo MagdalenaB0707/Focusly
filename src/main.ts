@@ -17,19 +17,27 @@ import {
   homeOutline,
   libraryOutline,
   flashOutline,
-  timerOutline,
+  timeOutline,
   trophyOutline,
   folderOpenOutline,
+  addOutline,
+  chevronForwardOutline,
+  bookOutline,
 } from 'ionicons/icons';
 
 addIcons({
   'home-outline': homeOutline,
   'library-outline': libraryOutline,
   'flash-outline': flashOutline,
-  'timer-outline': timerOutline,
+  'time-outline': timeOutline,         
   'trophy-outline': trophyOutline,
   'folder-open-outline': folderOpenOutline,
+  'add-outline': addOutline,
+  'chevron-forward-outline': chevronForwardOutline,
+  'book-outline': bookOutline,         
+
 });
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
