@@ -2,7 +2,6 @@
   display: block;
 }
 
-/* ---------- Toolbar / Header ---------- */
 
 .act-toolbar {
   --min-height: 56px;
@@ -17,14 +16,13 @@
   letter-spacing: 0.2px;
 }
 
-/* icon dugmići (Data room) */
 .icon-btn {
   --padding-start: 8px;
   --padding-end: 8px;
   --color: rgba(255, 255, 255, 0.85);
 }
 
-/* plus dugme kao mali “pill” */
+
 .plus-btn {
   --background: rgba(120, 100, 255, 0.16);
   --color: rgba(255, 255, 255, 0.92);
@@ -34,7 +32,7 @@
   height: 36px;
 }
 
-/* ---------- Content wrapper ---------- */
+
 
 .wrap {
   max-width: 520px; /* uža lista */
@@ -42,7 +40,7 @@
   padding-top: 10px;
 }
 
-/* ---------- States ---------- */
+
 
 .center {
   display: flex;
@@ -62,7 +60,7 @@
   margin-top: 12px;
 }
 
-/* ---------- List ---------- */
+
 
 .list {
   display: flex;
@@ -71,14 +69,14 @@
   margin-top: 8px;
 }
 
-/* ---------- Card ---------- */
+
 
 .a-card {
   margin: 0;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-  border-left: 3px solid rgba(120, 100, 255, 0.75); /* mala boja */
+  border-left: 3px solid rgba(120, 100, 255, 0.75); 
 }
 
 .a-card__content {
@@ -105,14 +103,14 @@
   opacity: 0.55;
 }
 
-/* ---------- Modal look ---------- */
+
 
 .act-modal::part(content) {
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
 }
 
-/* malo prostora pri dnu u sheet-u da ne “seče” dugme */
+
 .sheet {
   display: flex;
   flex-direction: column;

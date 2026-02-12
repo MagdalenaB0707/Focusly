@@ -275,7 +275,7 @@
 .medal-row {
   display: flex;
   justify-content: space-around;
-  font-size: 18px; // Malo povećano radi preglednosti
+  font-size: 18px; 
 
   .medal-clickable {
     cursor: pointer;
@@ -298,7 +298,7 @@
 
 .goals-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; // Dve kockice u redu
+  grid-template-columns: 1fr 1fr; 
   gap: 12px;
   margin-bottom: 20px;
 }

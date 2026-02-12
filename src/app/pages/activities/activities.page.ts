@@ -46,7 +46,7 @@ type FormMode = 'create' | 'edit';
     IonTitle,
     IonButtons,
     IonIcon,
-AppHeaderComponent,
+    AppHeaderComponent,
     IonContent,
     IonNote,
     IonSpinner,
@@ -102,7 +102,9 @@ export class ActivitiesPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.activities = [...data].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+          this.activities = [...data].sort(
+            (a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0),
+          );
           this.loading = false;
         },
         error: (e) => {
@@ -170,7 +172,11 @@ export class ActivitiesPage implements OnInit, OnDestroy {
     if (this.formMode === 'create') {
       this.saving = true;
       this.activitiesService
-        .create({ title, description: description || undefined, createdAt: Date.now() })
+        .create({
+          title,
+          description: description || undefined,
+          createdAt: Date.now(),
+        })
         .subscribe({
           next: (created) => {
             this.activities = [created, ...this.activities];
@@ -197,7 +203,9 @@ export class ActivitiesPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.activities = this.activities.map((x) =>
-            x.id === id ? { ...x, title, description: description || undefined } : x
+            x.id === id
+              ? { ...x, title, description: description || undefined }
+              : x,
           );
           this.updating = false;
           this.closeForm();
@@ -221,7 +229,7 @@ export class ActivitiesPage implements OnInit, OnDestroy {
     this.deleteActivity(this.editingId);
   }
 
-   deleteActivity(id: string) {
+  deleteActivity(id: string) {
     this.uiError = null;
     this.deletingId = id;
 
@@ -240,10 +248,9 @@ export class ActivitiesPage implements OnInit, OnDestroy {
       },
     });
   }
-  get selectedId(): string | null{
-  return this.selected?.id ?? null;
-}
-
+  get selectedId(): string | null {
+    return this.selected?.id ?? null;
+  }
 
   trackByActivityId(_: number, a: Activity) {
     return a.id;

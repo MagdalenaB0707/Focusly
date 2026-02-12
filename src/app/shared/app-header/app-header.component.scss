@@ -1,31 +1,78 @@
+ion-popover {
+  --width: 220px;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+
+  &::part(content) {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
 .user-pop {
-  --background: var(--app-surface, #151822);
-  --color: var(--app-text, rgba(255, 255, 255, 0.92));
-  min-width: 240px;
+  --background: var(--app-surface, #1b1e2e);
+  --color: #ffffff;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
 }
 
 .user-box {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding-bottom: 12px;
-  margin-bottom: 12px;
+  justify-content: center;
+  padding: 20px 16px;
+  text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  ion-icon {
+    font-size: 40px;
+    color: var(--ion-color-primary, #3880ff);
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 50%;
+  }
 }
 
 .user-meta {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
+  gap: 4px;
+  width: 100%;
 
-.user-label {
-  font-size: 12px;
-  opacity: 0.7;
-}
+  .user-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #888;
+    font-weight: 600;
+  }
 
-.user-email {
+  .user-email {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+    word-break: break-all;
+  }
+}
+ion-button[color="danger"] {
+  margin: 16px;
+  --border-radius: 8px;
+  --border-width: 1px;
+  height: 40px;
   font-size: 14px;
   font-weight: 600;
-  word-break: break-word;
+
+  &::part(native) {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }

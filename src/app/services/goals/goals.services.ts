@@ -6,10 +6,14 @@ import { AuthService } from '../auth/auth.services';
 import { paths } from '../api/firebase-paths';
 
 import { Goal, GoalDTO } from 'src/app/models/goal.model';
+import { key } from 'ionicons/icons';
 
 @Injectable({ providedIn: 'root' })
 export class GoalsService {
-  constructor(private api: ApiService, private auth: AuthService) {}
+  constructor(
+    private api: ApiService,
+    private auth: AuthService,
+  ) {}
 
   private get userId(): string {
     const id = this.auth.uid;
@@ -17,9 +21,17 @@ export class GoalsService {
     return id;
   }
 
+getByTarget(targetType: 'course' | 'activity', targetId: string): Observable<Goal[]> {
+  return this.getAll().pipe(
+    map(rows => rows.filter(g => (g as any).targetType === targetType && (g as any).targetId === targetId))
+  );
+}
+
   getAll(): Observable<Goal[]> {
-    return this.api.getList<GoalDTO>(paths.goals).pipe(
-      map((rows) => rows.filter((g) => g.userId === this.userId))
+    return this.api.getFilteredList<GoalDTO>(
+      paths.goals,
+      'userId',
+      this.userId,
     );
   }
 
@@ -29,9 +41,9 @@ export class GoalsService {
       userId: this.userId,
     };
 
-    return this.api.create<GoalDTO>(paths.goals, dto).pipe(
-      map((res) => ({ ...dto, id: res.name } as Goal))
-    );
+    return this.api
+      .create<GoalDTO>(paths.goals, dto)
+      .pipe(map((res) => ({ ...dto, id: res.name }) as Goal));
   }
 
   update(id: string, patch: Partial<GoalDTO>): Observable<void> {
