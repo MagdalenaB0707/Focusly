@@ -40,6 +40,7 @@ import {
 import { CoursesService } from 'src/app/services/courses/courses.service';
 import { ActivitiesService } from 'src/app/services/activities/activities.services';
 import { StudySessionsService } from 'src/app/services/studySessions/study-sessions.services';
+import { AppHeaderComponent } from 'src/app/shared/app-header/app-header.component';
 
 @Component({
   selector: 'app-study-sessions',
@@ -54,6 +55,7 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
     IonHeader,
     IonToolbar,
     IonTitle,
+    AppHeaderComponent,
     IonModal,
     IonButtons,
     IonCard,

@@ -1,19 +1,5 @@
-<ion-header>
-  <ion-toolbar class="act-toolbar">
-    <ion-buttons slot="start">
-      <ion-button
-        fill="clear"
-        class="icon-btn"
-        [routerLink]="['/data-room']"
-        aria-label="Data Room"
-      >
-        <ion-icon name="folder-open-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+<app-header title="Goals"></app-header>
 
-    <ion-title class="act-title">Goals</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content fullscreen class="ion-padding">
   <div class="wrap">
@@ -66,7 +52,6 @@
     </div>
   </div>
 
-  <!-- CREATE / EDIT (ovde samo CREATE) -->
   <ion-modal
     [isOpen]="formOpen"
     (didDismiss)="closeForm()"
@@ -159,7 +144,7 @@
     </ng-template>
   </ion-modal>
 
-  <!-- ACTIONS MODAL -->
+
   <ion-modal
     [isOpen]="actionsOpen"
     (didDismiss)="closeActions()"
@@ -189,7 +174,7 @@
     </ng-template>
   </ion-modal>
 
-  <!-- FAB -->
+
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="openCreate()" class="add-fab" aria-label="Add Goal">
       <ion-icon name="add-outline"></ion-icon>

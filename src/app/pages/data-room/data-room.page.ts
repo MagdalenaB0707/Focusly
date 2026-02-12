@@ -13,7 +13,8 @@ import {
   IonSelectOption,
   IonSpinner,
   IonNote,
-  IonBackButton
+  IonBackButton,
+  IonIcon,
 } from '@ionic/angular/standalone';
 
 import { Subject, takeUntil } from 'rxjs';
@@ -33,7 +34,7 @@ type ColDim = 'months' | 'weeks';
 type PivotRow = {
   id: string;
   label: string;
-  values: number[]; 
+  values: number[];
   total: number;
 };
 
@@ -45,7 +46,7 @@ type PivotRow = {
   imports: [
     CommonModule,
     FormsModule,
-
+    IonIcon,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -59,8 +60,7 @@ type PivotRow = {
 
     IonSpinner,
     IonNote,
-    IonBackButton
-
+    IonBackButton,
   ],
 })
 export class DataRoomPage implements OnInit, OnDestroy {
@@ -71,13 +71,13 @@ export class DataRoomPage implements OnInit, OnDestroy {
   courses: Course[] = [];
   activities: Activity[] = [];
 
-  metric: Metric = 'minutes';        // Sessions | Minutes
-  rowDim: RowDim = 'courses';        // Courses | Activities
-  colDim: ColDim = 'months';         // Months | Calendar Weeks
-  year = new Date().getFullYear();   // za months/weeks
+  metric: Metric = 'minutes';
+  rowDim: RowDim = 'courses';
+  colDim: ColDim = 'months';
+  year = new Date().getFullYear();
 
-  colKeys: string[] = [];           
-  colLabels: string[] = [];        
+  colKeys: string[] = [];
+  colLabels: string[] = [];
   rows: PivotRow[] = [];
   colTotals: number[] = [];
   grandTotal = 0;
@@ -87,7 +87,7 @@ export class DataRoomPage implements OnInit, OnDestroy {
   constructor(
     private sessionsService: StudySessionsService,
     private coursesService: CoursesService,
-    private activitiesService: ActivitiesService
+    private activitiesService: ActivitiesService,
   ) {}
 
   ngOnInit() {
@@ -107,47 +107,56 @@ export class DataRoomPage implements OnInit, OnDestroy {
     this.loading = true;
     this.errorMsg = null;
 
-    this.coursesService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (courses) => {
-        this.courses = courses;
+    this.coursesService
+      .getAll()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (courses) => {
+          this.courses = courses;
 
-        this.activitiesService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-          next: (acts) => {
-            this.activities = acts;
+          this.activitiesService
+            .getAll()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (acts) => {
+                this.activities = acts;
 
-            this.sessionsService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-              next: (sessions) => {
-                this.sessions = sessions;
-                this.recomputePivot();
-                this.loading = false;
+                this.sessionsService
+                  .getAll()
+                  .pipe(takeUntil(this.destroy$))
+                  .subscribe({
+                    next: (sessions) => {
+                      this.sessions = sessions;
+                      this.recomputePivot();
+                      this.loading = false;
+                    },
+                    error: (e) => {
+                      console.error(e);
+                      this.errorMsg = 'Failed to load study sessions.';
+                      this.loading = false;
+                    },
+                  });
               },
               error: (e) => {
                 console.error(e);
-                this.errorMsg = 'Failed to load study sessions.';
+                this.errorMsg = 'Failed to load activities.';
                 this.loading = false;
               },
             });
-          },
-          error: (e) => {
-            console.error(e);
-            this.errorMsg = 'Failed to load activities.';
-            this.loading = false;
-          },
-        });
-      },
-      error: (e) => {
-        console.error(e);
-        this.errorMsg = 'Failed to load courses.';
-        this.loading = false;
-      },
-    });
+        },
+        error: (e) => {
+          console.error(e);
+          this.errorMsg = 'Failed to load courses.';
+          this.loading = false;
+        },
+      });
   }
 
-
   private recomputePivot() {
-    const cols = this.colDim === 'months'
-      ? this.buildMonthColumns(this.year)
-      : this.buildWeekColumns(this.year);
+    const cols =
+      this.colDim === 'months'
+        ? this.buildMonthColumns(this.year)
+        : this.buildWeekColumns(this.year);
 
     this.colKeys = cols.map((c) => c.key);
     this.colLabels = cols.map((c) => c.label);
@@ -160,30 +169,33 @@ export class DataRoomPage implements OnInit, OnDestroy {
       return d.getFullYear() === this.year;
     });
 
-    const byRow = new Map<string, number[]>(); 
+    const byRow = new Map<string, number[]>();
 
     for (const s of filtered) {
       const colIndex = this.findColIndex(s.startedAt);
       if (colIndex === -1) continue;
 
       const rowId = s.targetId;
-      if (!byRow.has(rowId)) byRow.set(rowId, new Array(this.colKeys.length).fill(0));
+      if (!byRow.has(rowId))
+        byRow.set(rowId, new Array(this.colKeys.length).fill(0));
 
       const arr = byRow.get(rowId)!;
 
-      const add = this.metric === 'sessions' ? 1 : (s.durationMinutes || 0);
+      const add = this.metric === 'sessions' ? 1 : s.durationMinutes || 0;
       arr[colIndex] += add;
     }
 
-    const pivotRows: PivotRow[] = Array.from(byRow.entries()).map(([id, values]) => {
-      const total = values.reduce((sum, v) => sum + v, 0);
-      return {
-        id,
-        label: this.labelForTarget(wantedTargetType, id),
-        values,
-        total,
-      };
-    });
+    const pivotRows: PivotRow[] = Array.from(byRow.entries()).map(
+      ([id, values]) => {
+        const total = values.reduce((sum, v) => sum + v, 0);
+        return {
+          id,
+          label: this.labelForTarget(wantedTargetType, id),
+          values,
+          total,
+        };
+      },
+    );
 
     pivotRows.sort((a, b) => b.total - a.total);
 
@@ -198,22 +210,37 @@ export class DataRoomPage implements OnInit, OnDestroy {
     this.grandTotal = grand;
   }
 
-  private labelForTarget(targetType: 'course' | 'activity', targetId: string): string {
+  private labelForTarget(
+    targetType: 'course' | 'activity',
+    targetId: string,
+  ): string {
     if (targetType === 'course') {
       return this.courses.find((c) => c.id === targetId)?.title ?? targetId;
     }
     return this.activities.find((a) => a.id === targetId)?.title ?? targetId;
   }
 
-
   private buildMonthColumns(year: number): { key: string; label: string }[] {
-    const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const labels = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     const yy = String(year).slice(-2);
 
     return Array.from({ length: 12 }).map((_, idx) => {
       const m = String(idx + 1).padStart(2, '0');
       return {
-        key: `${year}-${m}`,       // 2026-01
+        key: `${year}-${m}`, // 2026-01
         label: `${labels[idx]} ${yy}`,
       };
     });
@@ -245,18 +272,38 @@ export class DataRoomPage implements OnInit, OnDestroy {
   }
 
   private isoWeek(date: Date): { year: number; week: number } {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const d = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
     const dayNum = d.getUTCDay() || 7;
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    const week = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    const week = Math.ceil(
+      ((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
+    );
     return { year: d.getUTCFullYear(), week };
   }
 
-  trackByRowId(_: number, r: PivotRow) { return r.id; }
-  trackByIdx(i: number) { return i; }
+  trackByRowId(_: number, r: PivotRow) {
+    return r.id;
+  }
+  trackByIdx(i: number) {
+    return i;
+  }
 
   formatCell(v: number): string {
-   return String(v);
+    if (this.metric === 'sessions') {
+      return v === 0 ? '-' : String(v);
+    }
+
+    if (!v || v <= 0) return '-';
+
+    const hours = Math.floor(v / 60);
+    const mins = v % 60;
+
+    if (hours > 0) {
+      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+    return `${mins}m`;
   }
 }

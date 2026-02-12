@@ -174,3 +174,79 @@ ion-fab {
   margin-bottom: 64px;
   margin-right: 8px;
 }
+
+.act-modal::part(content) {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+
+
+  background: rgba(21, 24, 34, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+
+  box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.act-modal ion-toolbar {
+  --background: transparent;
+  --color: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.act-modal ion-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+
+.act-modal ion-item {
+  --background: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+
+.act-modal ion-item::part(native) {
+  border-radius: 12px;
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 28px; 
+}
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.act-modal ion-button[expand="block"] {
+  --border-radius: 12px;
+  height: 44px;
+  font-weight: 800;
+}
+
+.actions-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 6px;
+}
+
+.actions-title {
+  font-weight: 800;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.act-modal ion-button[fill="clear"] {
+  opacity: 0.9;
+}
+
+.act-modal ion-button[color="danger"][fill="outline"] {
+  --border-radius: 12px;
+}

@@ -1,20 +1,5 @@
-<ion-header>
-  <ion-toolbar class="act-toolbar">
-    <ion-buttons slot="start">
-      <ion-button
-        type="button"
-        fill="clear"
-        class="icon-btn"
-        [routerLink]="['/data-room']"
-        aria-label="Data Room"
-      >
-        <ion-icon name="folder-open-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+<app-header title="Activities"></app-header>
 
-    <ion-title class="act-title">Activities</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content fullscreen class="ion-padding">
   <div class="wrap">
@@ -128,8 +113,8 @@
   <ion-modal
     [isOpen]="actionsOpen"
     (didDismiss)="closeActions()"
-    [initialBreakpoint]="0.35"
-    [breakpoints]="[0,0.35,0.5]"
+    [initialBreakpoint]="0.45"
+    [breakpoints]="[0,0.45,0.65]"
     [backdropBreakpoint]="0.35"
     class="act-modal"
   >
@@ -169,7 +154,7 @@
       </ion-content>
     </ng-template>
   </ion-modal>
-  <!-- FLOATING PLUS BUTTON -->
+
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="openCreate()" class="add-fab">
       <ion-icon name="add-outline"></ion-icon>

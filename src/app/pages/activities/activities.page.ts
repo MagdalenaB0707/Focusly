@@ -25,6 +25,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { Activity } from 'src/app/models/activity.model';
 import { ActivitiesService } from 'src/app/services/activities/activities.services';
+import { AppHeaderComponent } from 'src/app/shared/app-header/app-header.component';
 
 type FormMode = 'create' | 'edit';
 
@@ -45,7 +46,7 @@ type FormMode = 'create' | 'edit';
     IonTitle,
     IonButtons,
     IonIcon,
-
+AppHeaderComponent,
     IonContent,
     IonNote,
     IonSpinner,

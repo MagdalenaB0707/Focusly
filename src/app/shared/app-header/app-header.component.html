@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar class="act-toolbar">
+    <ion-title class="act-title">{{ title }}</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button
+        fill="clear"
+        class="icon-btn"
+        aria-label="User menu"
+        (click)="openUserMenu($event)"
+      >
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-popover
+  [isOpen]="menuOpen"
+  [event]="menuEvent"
+  (didDismiss)="menuOpen = false"
+>
+  <ng-template>
+    <ion-content class="ion-padding user-pop">
+      <div class="user-box">
+        <ion-icon name="person-outline"></ion-icon>
+        <div class="user-meta">
+          <div class="user-label">Logged in as</div>
+          <div class="user-email">{{ (email$ | async) ?? '—' }}</div>
+        </div>
+      </div>
+
+      <ion-button expand="block" fill="outline" color="danger" (click)="onLogout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Logout
+      </ion-button>
+    </ion-content>
+  </ng-template>
+</ion-popover>

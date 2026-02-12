@@ -1,0 +1,31 @@
+.user-pop {
+  --background: var(--app-surface, #151822);
+  --color: var(--app-text, rgba(255, 255, 255, 0.92));
+  min-width: 240px;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-label {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.user-email {
+  font-size: 14px;
+  font-weight: 600;
+  word-break: break-word;
+}

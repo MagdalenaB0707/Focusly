@@ -36,6 +36,7 @@ import { CoursesService } from 'src/app/services/courses/courses.service';
 import { GoalsService } from 'src/app/services/goals/goals.services';
 import { StudySession } from 'src/app/models/study-session.model';
 import { StudySessionsService } from 'src/app/services/studySessions/study-sessions.services';
+import { AppHeaderComponent } from 'src/app/shared/app-header/app-header.component';
 
 @Component({
   selector: 'app-goals',
@@ -52,6 +53,7 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
     IonButtons,
     IonMenuButton,
     RouterLink,
+    AppHeaderComponent,
     IonContent,
     IonItem,
     IonSelect,
@@ -79,7 +81,6 @@ export class GoalsPage implements OnInit, OnDestroy {
   saving = false;
   deletingId: string | null = null;
   uiError: string | null = null;
-  // modals
   formOpen = false;
   actionsOpen = false;
   selected: Goal | null = null;
@@ -90,6 +91,13 @@ export class GoalsPage implements OnInit, OnDestroy {
 
   openCreate() {
     this.uiError = null;
+    this.form = {
+      targetType: 'activity',
+      targetId: '',
+      period: 'weekly',
+      targetHours: 0,
+      targetMins: 0,
+    };
     this.formOpen = true;
   }
 
@@ -316,8 +324,8 @@ export class GoalsPage implements OnInit, OnDestroy {
   private getPeriodRange(_: GoalPeriod): { from: number; to: number } {
     const now = new Date();
 
-    // Monday start
-    const day = now.getDay(); // 0=Sun
+
+    const day = now.getDay(); 
     const diffToMonday = (day + 6) % 7;
 
     const monday = new Date(

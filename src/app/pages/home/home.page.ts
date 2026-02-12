@@ -2,6 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import {
+  AlertController,
+  IonicSafeString,
+  IonPopover,
+} from '@ionic/angular/standalone';
+import {
   IonButtons,
   IonHeader,
   IonToolbar,
@@ -20,10 +25,10 @@ import {
   IonLabel,
   IonList,
   IonNote,
-  IonBadge
+  IonBadge,
 } from '@ionic/angular/standalone';
 import { Subject, takeUntil } from 'rxjs';
-
+import { AuthService } from 'src/app/services/auth/auth.services';
 import { StudySession } from 'src/app/models/study-session.model';
 import { Goal } from 'src/app/models/goal.model';
 import { Course } from 'src/app/models/course.model';
@@ -32,6 +37,7 @@ import { StudySessionsService } from 'src/app/services/studySessions/study-sessi
 import { GoalsService } from 'src/app/services/goals/goals.services';
 import { ActivitiesService } from 'src/app/services/activities/activities.services';
 import { CoursesService } from 'src/app/services/courses/courses.service';
+import { AppHeaderComponent } from 'src/app/shared/app-header/app-header.component';
 
 type DayStat = {
   key: string;
@@ -61,11 +67,13 @@ type BreakdownRow = {
     IonTitle,
     IonButton,
     IonContent,
+    IonPopover,
     RouterLink,
     IonIcon,
     IonCard,
     IonCardHeader,
     IonCardTitle,
+    AppHeaderComponent,
     IonCardContent,
     IonGrid,
     IonRow,
@@ -116,6 +124,9 @@ export class HomePage implements OnInit, OnDestroy {
     private goalsService: GoalsService,
     private coursesService: CoursesService,
     private activitiesService: ActivitiesService,
+    private alertCtrl: AlertController,
+    public authService: AuthService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -125,6 +136,11 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onLogout() {
+    this.authService.logout();
+    this.router.navigateByUrl('/auth', { replaceUrl: true });
   }
   private loadAll() {
     this.loading = true;
@@ -193,7 +209,16 @@ export class HomePage implements OnInit, OnDestroy {
   trackByBreakdownId(_: number, r: BreakdownRow) {
     return r.id;
   }
+  formatMins(totalMinutes: number): string {
+    if (!totalMinutes || totalMinutes <= 0) return '0m';
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
 
+    if (hours > 0) {
+      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+    return `${mins}m`;
+  }
   private recompute() {
     const now = new Date();
 
@@ -213,11 +238,12 @@ export class HomePage implements OnInit, OnDestroy {
       this.dailyGoalMinutes,
     );
 
-    this.medals = this.computeMedals(); // across all days in DB (simple)
+    this.medals = this.computeMedals();
     this.pickActiveGoal();
     this.computeActiveGoalWidget();
     this.computeActivityBreakdown();
     this.computeCourseBreakdown();
+    this.computeAllGoalsProgress();
   }
 
   private computeActivityBreakdown() {
@@ -257,6 +283,40 @@ export class HomePage implements OnInit, OnDestroy {
       this.activities.find((a) => a.id === targetId)?.title ?? '(Activity)'
     );
   }
+
+  // Dodaj ovo u klasu
+  allGoalsProgress: any[] = [];
+
+  private computeAllGoalsProgress() {
+    this.allGoalsProgress = this.goals.map((g) => {
+      const { from, to } = this.getPeriodRange(g.period);
+
+      const sessionsInPeriod = this.sessions.filter(
+        (s) =>
+          s.startedAt >= from &&
+          s.startedAt < to &&
+          s.targetType === g.targetType &&
+          s.targetId === g.targetId,
+      );
+
+      const done = sessionsInPeriod.reduce(
+        (sum, s) => sum + (s.durationMinutes || 0),
+        0,
+      );
+      const target = g.targetMinutes || 0;
+      const pct =
+        target > 0 ? Math.min(100, Math.round((done / target) * 100)) : 0;
+
+      return {
+        title: this.labelForTarget(g.targetType, g.targetId),
+        type: g.targetType,
+        done,
+        target,
+        pct,
+      };
+    });
+  }
+
   private computeCourseBreakdown() {
     const { from, to } = this.getPeriodRange('weekly');
 
@@ -283,6 +343,32 @@ export class HomePage implements OnInit, OnDestroy {
       .sort((a, b) => b.minutes - a.minutes);
 
     this.courseBreakdown = result;
+  }
+  async showMedalDetail(type: 'gold' | 'silver' | 'bronze') {
+    const count = this.medals[type];
+    const config = {
+      gold: { icon: '🥇', label: 'Gold', req: '4+ hours' },
+      silver: { icon: '🥈', label: 'Silver', req: '3+ hours' },
+      bronze: { icon: '🥉', label: 'Bronze', req: '2+ hours' },
+    };
+
+    const selected = config[type];
+
+    let messageText = '';
+    if (count > 0) {
+      messageText = `Bravo! You've earned this medal ${count} times so far. Keep up the legendary work!`;
+    } else {
+      messageText = `You haven't earned a ${selected.label} medal yet. Study for ${selected.req} in a single day to unlock it!`;
+    }
+
+    const alert = await this.alertCtrl.create({
+      header: `${selected.icon} ${selected.label} Medal`,
+      message: messageText, // Običan string bez <b> tagova za sada da proverimo
+      buttons: ['Got it!'],
+      cssClass: 'custom-medal-alert',
+    });
+
+    await alert.present();
   }
 
   private pickActiveGoal() {
@@ -416,9 +502,10 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private pickDailyGoalMinutes(goals: Goal[]): number {
-    const daily = goals.filter((g) => g.period === 'daily');
-    if (daily.length === 0) return 0;
-    return Math.max(...daily.map((g) => g.targetMinutes || 0));
+    const weekly = goals.filter((g) => g.period === 'weekly');
+    if (weekly.length === 0) return 0;
+    const maxWeeklyMins = Math.max(...weekly.map((g) => g.targetMinutes || 0));
+    return Math.round(maxWeeklyMins / 7);
   }
 
   private buildLast7Days(now: Date): DayStat[] {
@@ -479,6 +566,22 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     return { bronze, silver, gold };
+  }
+
+  async showMedalsInfo() {
+    const alert = await this.alertCtrl.create({
+      header: 'Achivement Guide',
+      subHeader: 'How to win medals?',
+      message: `
+      <div class="medal-info">
+        <p>🥇 <b>Gold:</b> 4+ hours in a day</p>
+        <p>🥈 <b>Silver:</b> 3+ hours in a day</p>
+        <p>🥉 <b>Bronze:</b> 2+ hours in a day</p>
+      </div>
+    `,
+      buttons: ['Got it!'],
+    });
+    await alert.present();
   }
 
   private rangeDay(d: Date): { from: number; to: number } {

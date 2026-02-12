@@ -128,3 +128,87 @@ ion-fab {
   --padding-end: 8px;
   --color: rgba(255, 255, 255, 0.85);
 }
+
+.act-modal::part(content) {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+
+  background: rgba(21, 24, 34, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* header inside modal */
+.act-modal ion-toolbar {
+  --background: transparent;
+  --color: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.act-modal ion-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.sheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 28px;
+}
+
+.act-modal ion-item {
+  --background: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  padding-bottom: 12px;
+}
+
+.act-modal ion-item::part(native) {
+  border-radius: 12px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.act-modal ion-button[expand="block"] {
+  --border-radius: 12px;
+  height: 44px;
+  font-weight: 800;
+}
+
+.err {
+  display: block;
+  margin-top: 8px;
+}
+
+.action-sheet-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+
+.action-title {
+  font-weight: 800;
+  font-size: 16px;
+  text-align: center;
+  margin: 4px 0 2px 0;
+}
+
+.action-sheet-custom ion-button:first-of-type {
+  --border-radius: 12px;
+  height: 44px;
+  font-weight: 800;
+}
+
+.action-sheet-custom ion-button[color="danger"][fill="outline"] {
+  --border-radius: 12px;
+  height: 44px;
+  font-weight: 800;
+}

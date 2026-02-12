@@ -1,14 +1,5 @@
-<ion-header>
-  <ion-toolbar class="act-toolbar">
-    <ion-buttons slot="start">
-      <ion-button fill="clear" class="icon-btn" [routerLink]="['/data-room']" aria-label="Data Room">
-        <ion-icon name="folder-open-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+<app-header title="Courses"></app-header>
 
-    <ion-title class="act-title">Courses</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content fullscreen class="ion-padding">
   <div class="wrap">
@@ -16,7 +7,10 @@
       <ion-spinner></ion-spinner>
     </div>
 
-    <ion-note *ngIf="!loading && !uiError && courses.length === 0" class="empty">
+    <ion-note
+      *ngIf="!loading && !uiError && courses.length === 0"
+      class="empty"
+    >
       No courses yet. Tap <b>+</b> to add one.
     </ion-note>
 
@@ -26,7 +20,11 @@
 
     <!-- LISTA kao kartice -->
     <div class="list" *ngIf="!loading && courses.length > 0">
-      <ion-card class="a-card" *ngFor="let c of courses; trackBy: trackByCourseId" (click)="openActions(c)">
+      <ion-card
+        class="a-card"
+        *ngFor="let c of courses; trackBy: trackByCourseId"
+        (click)="openActions(c)"
+      >
         <ion-card-content class="a-card__content">
           <div class="a-card__main">
             <div class="a-title">{{ c.title }}</div>
@@ -55,9 +53,14 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>{{ formMode === 'create' ? 'New course' : 'Edit course' }}</ion-title>
+          <ion-title
+            >{{ formMode === 'create' ? 'New course' : 'Edit course'
+            }}</ion-title
+          >
           <ion-buttons slot="end">
-            <ion-button type="button" fill="clear" (click)="closeForm()">Close</ion-button>
+            <ion-button type="button" fill="clear" (click)="closeForm()"
+              >Close</ion-button
+            >
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
@@ -97,8 +100,14 @@
             {{ uiError }}
           </ion-note>
 
-          <ion-button type="button" expand="block" (click)="submitForm()" [disabled]="saving || updating">
-            {{ (saving || updating) ? 'Please wait...' : (formMode === 'create' ? 'Create' : 'Save changes') }}
+          <ion-button
+            type="button"
+            expand="block"
+            (click)="submitForm()"
+            [disabled]="saving || updating"
+          >
+            {{ (saving || updating) ? 'Please wait...' : (formMode === 'create'
+            ? 'Create' : 'Save changes') }}
           </ion-button>
 
           <ion-button
@@ -121,9 +130,8 @@
   <ion-modal
     [isOpen]="actionsOpen"
     (didDismiss)="closeActions()"
-    [initialBreakpoint]="0.35"
-    [breakpoints]="[0,0.35,0.5]"
-    [backdropBreakpoint]="0.35"
+    [initialBreakpoint]="0.45"
+    [breakpoints]="[0,0.45,0.65]"
     class="act-modal"
   >
     <ng-template>
@@ -131,7 +139,11 @@
         <div class="actions-sheet">
           <div class="actions-title">{{ selected?.title }}</div>
 
-          <ion-button type="button" expand="block" (click)="openEditFromActions()">
+          <ion-button
+            type="button"
+            expand="block"
+            (click)="openEditFromActions()"
+          >
             Edit
           </ion-button>
 
@@ -143,10 +155,16 @@
             (click)="selectedId && deleteCourse(selectedId)"
             [disabled]="!selectedId || deletingId === selectedId"
           >
-            {{ selectedId && deletingId === selectedId ? 'Deleting...' : 'Delete' }}
+            {{ selectedId && deletingId === selectedId ? 'Deleting...' :
+            'Delete' }}
           </ion-button>
 
-          <ion-button type="button" expand="block" fill="clear" (click)="closeActions()">
+          <ion-button
+            type="button"
+            expand="block"
+            fill="clear"
+            (click)="closeActions()"
+          >
             Cancel
           </ion-button>
         </div>
@@ -154,9 +172,12 @@
     </ng-template>
   </ion-modal>
 
-  <!-- FAB (+) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="openCreate()" class="add-fab" aria-label="Add Course">
+    <ion-fab-button
+      (click)="openCreate()"
+      class="add-fab"
+      aria-label="Add Course"
+    >
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -25,6 +25,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { Course } from 'src/app/models/course.model';
 import { CoursesService } from 'src/app/services/courses/courses.service';
+import { AppHeaderComponent } from 'src/app/shared/app-header/app-header.component';
 
 type FormMode = 'create' | 'edit';
 
@@ -37,7 +38,7 @@ type FormMode = 'create' | 'edit';
     CommonModule,
     FormsModule,
     RouterLink,
-
+    AppHeaderComponent,
     IonHeader,
     IonToolbar,
     IonTitle,

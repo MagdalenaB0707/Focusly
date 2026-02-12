@@ -23,6 +23,7 @@ import {
   addOutline,
   chevronForwardOutline,
   bookOutline,
+  personCircleOutline,
 } from 'ionicons/icons';
 
 addIcons({
@@ -34,7 +35,8 @@ addIcons({
   'folder-open-outline': folderOpenOutline,
   'add-outline': addOutline,
   'chevron-forward-outline': chevronForwardOutline,
-  'book-outline': bookOutline,         
+  'book-outline': bookOutline,       
+  'person-circle-outline': personCircleOutline,  
 
 });
 

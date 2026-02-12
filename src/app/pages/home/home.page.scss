@@ -1,0 +1,379 @@
+:host {
+  --course-color: #7c6cff;
+  --activity-color: #22c55e;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dash {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 20px 0 10px 4px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+}
+
+.kpi-label {
+  font-size: 12px;
+  opacity: 0.6;
+}
+.kpi-value {
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+.card {
+  margin: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: none;
+
+  &--main {
+    background: linear-gradient(
+      145deg,
+      rgba(124, 108, 255, 0.08) 0%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    border: 1px solid rgba(124, 108, 255, 0.2);
+  }
+
+  &--empty {
+    padding: 30px;
+    text-align: center;
+    opacity: 0.6;
+    ion-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.goal-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.goal-name {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 8px 0;
+}
+.goal-stats {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.1);
+
+  &--course {
+    color: var(--course-color);
+    background: rgba(124, 108, 255, 0.15);
+  }
+  &--activity {
+    color: var(--activity-color);
+    background: rgba(34, 197, 94, 0.15);
+  }
+}
+
+.ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(
+    var(--course-color) var(--p),
+    var(--border-color) 0
+  );
+  &--activity {
+    background: conic-gradient(
+      var(--activity-color) var(--p),
+      var(--border-color) 0
+    );
+  }
+}
+
+.ring-inner {
+  width: 64px;
+  height: 64px;
+  background: #12141a;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.ring-pct {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.streak-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  padding: 10px 0;
+}
+
+.streak-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  .day-name {
+    font-size: 10px;
+    opacity: 0.5;
+    font-weight: 700;
+  }
+  .day-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border-color);
+  }
+  .day-mins {
+    font-size: 10px;
+    opacity: 0.4;
+  }
+
+  &.is-active .day-dot {
+    background: var(--course-color);
+    opacity: 0.5;
+  }
+  &.is-hit .day-dot {
+    background: var(--activity-color);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+  }
+}
+
+.streak-footer {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  font-size: 13px;
+}
+
+.split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.mini-card {
+  padding: 15px;
+  .card-header {
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    small {
+      opacity: 0.5;
+      float: right;
+    }
+  }
+}
+
+.breakdown-item {
+  margin-bottom: 10px;
+  .item-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  .fill {
+    height: 100%;
+    border-radius: 2px;
+    &--course {
+      background: var(--course-color);
+    }
+    &--activity {
+      background: var(--activity-color);
+    }
+  }
+}
+
+.medal-row {
+  display: flex;
+  justify-content: space-around;
+  font-size: 16px;
+  b {
+    margin-left: 4px;
+  }
+}
+
+.perf-val {
+  font-size: 24px;
+  font-weight: 900;
+  &.pos {
+    color: var(--activity-color);
+  }
+  &.neg {
+    color: #ff4961;
+  }
+}
+
+.empty-msg {
+  font-size: 12px;
+  opacity: 0.4;
+  text-align: center;
+  padding: 10px;
+}
+.welcome-note {
+  padding: 10px 4px;
+  h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+  }
+  p {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+.medal-row {
+  display: flex;
+  justify-content: space-around;
+  font-size: 18px; // Malo povećano radi preglednosti
+
+  .medal-clickable {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+
+    &:active {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(0.95);
+    }
+
+    b {
+      margin-left: 6px;
+    }
+  }
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; // Dve kockice u redu
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.goal-mini-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  gap: 10px;
+}
+
+.goal-mini-info {
+  width: 100%;
+  .badge {
+    display: block;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .goal-mini-stats {
+    font-size: 11px;
+    opacity: 0.7;
+  }
+}
+ion-popover {
+  --width: 200px;
+  --border-radius: 12px;
+}
+.ring--small {
+  width: 60px;
+  height: 60px;
+  .ring-inner {
+    width: 48px;
+    height: 48px;
+  }
+  .ring-pct {
+    font-size: 12px;
+  }
+}
+
+
+
+@media (max-width: 360px) {
+  .goals-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.medal-info {
+  p {
+    margin: 10px 0;
+    font-size: 15px;
+  }
+}
+
+::ng-deep .custom-medal-alert {
+  .alert-message {
+    text-align: center;
+  }
+  .alert-head {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .split-grid {
+    grid-template-columns: 1fr;
+  }
+}

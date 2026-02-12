@@ -28,15 +28,19 @@ export class AuthService {
     return !!this.token;
   }
 
+  get currentUserEmail(): string | null {
+    return this.sessionSubject.value?.email ?? null;
+  }
+
   register(email: string, password: string): Observable<AuthSession> {
     return this.http
       .post<AuthResponseData>(
         `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`,
-        { email, password, returnSecureToken: true }
+        { email, password, returnSecureToken: true },
       )
       .pipe(
         map((res) => this.toSession(res)),
-        tap((s) => this.save(s))
+        tap((s) => this.save(s)),
       );
   }
 
@@ -44,11 +48,11 @@ export class AuthService {
     return this.http
       .post<AuthResponseData>(
         `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`,
-        { email, password, returnSecureToken: true }
+        { email, password, returnSecureToken: true },
       )
       .pipe(
         map((res) => this.toSession(res)),
-        tap((s) => this.save(s))
+        tap((s) => this.save(s)),
       );
   }
 

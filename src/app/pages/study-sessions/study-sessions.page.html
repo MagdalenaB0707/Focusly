@@ -1,19 +1,5 @@
-<ion-header>
-  <ion-toolbar class="act-toolbar">
-    <ion-title class="act-title">Study Sessions</ion-title>
+<app-header title="Study Sessions"></app-header>
 
-    <ion-buttons slot="start">
-      <ion-button
-        fill="clear"
-        class="icon-btn"
-        [routerLink]="['/data-room']"
-        aria-label="Data Room"
-      >
-        <ion-icon name="folder-open-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content fullscreen class="ion-padding">
   <div class="wrap">
@@ -63,10 +49,12 @@
   </div>
 
   <ion-modal
+    class="act-modal"
     [isOpen]="formOpen"
     (didDismiss)="closeForm()"
-    [initialBreakpoint]="0.75"
-    [breakpoints]="[0, 0.75, 1]"
+    [initialBreakpoint]="0.8"
+    [breakpoints]="[0, 0.8, 1]"
+    [backdropBreakpoint]="0.8"
   >
     <ng-template>
       <ion-header>
@@ -166,10 +154,12 @@
   </ion-modal>
 
   <ion-modal
+    class="act-modal"
     [isOpen]="actionsOpen"
     (didDismiss)="actionsOpen = false"
-    [initialBreakpoint]="0.25"
-    [breakpoints]="[0, 0.25]"
+    [initialBreakpoint]="0.35"
+    [breakpoints]="[0, 0.35, 0.5]"
+    [backdropBreakpoint]="0.35"
   >
     <ng-template>
       <div class="ion-padding action-sheet-custom">

@@ -1,99 +1,84 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar class="act-toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/home" text=""></ion-back-button>
     </ion-buttons>
-
-    <ion-title>Data Room</ion-title>
+    <ion-title class="act-title">Data Room</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="dr">
-    <div class="dr__controls">
-      <ion-item>
-        <ion-label>Metric</ion-label>
-        <ion-select [(ngModel)]="metric" (ionChange)="onControlsChanged()">
-          <ion-select-option value="minutes">Minutes</ion-select-option>
-          <ion-select-option value="sessions">Sessions</ion-select-option>
-        </ion-select>
-      </ion-item>
+<ion-content fullscreen class="ion-padding">
+  <div class="dr-container">
+    
+    <div class="controls-card">
+      <div class="control-group">
+        <label>Metric</label>
+        <select [(ngModel)]="metric" (change)="onControlsChanged()">
+          <option value="minutes">Minutes</option>
+          <option value="sessions">Sessions</option>
+        </select>
+      </div>
 
-      <ion-item>
-        <ion-label>Rows</ion-label>
-        <ion-select [(ngModel)]="rowDim" (ionChange)="onControlsChanged()">
-          <ion-select-option value="courses">Courses</ion-select-option>
-          <ion-select-option value="activities">Activities</ion-select-option>
-        </ion-select>
-      </ion-item>
+      <div class="control-group">
+        <label>Rows</label>
+        <select [(ngModel)]="rowDim" (change)="onControlsChanged()">
+          <option value="courses">Courses</option>
+          <option value="activities">Activities</option>
+        </select>
+      </div>
 
-      <ion-item>
-        <ion-label>Columns</ion-label>
-        <ion-select [(ngModel)]="colDim" (ionChange)="onControlsChanged()">
-          <ion-select-option value="months">Months</ion-select-option>
-          <ion-select-option value="weeks">Calendar Weeks</ion-select-option>
-        </ion-select>
-      </ion-item>
+      <div class="control-group">
+        <label>Columns</label>
+        <select [(ngModel)]="colDim" (change)="onControlsChanged()">
+          <option value="months">Months</option>
+          <option value="weeks">Weeks</option>
+        </select>
+      </div>
 
-      <ion-item>
-        <ion-label>Year</ion-label>
-        <ion-select [(ngModel)]="year" (ionChange)="onControlsChanged()">
-          <ion-select-option [value]="2024">2024</ion-select-option>
-          <ion-select-option [value]="2025">2025</ion-select-option>
-          <ion-select-option [value]="2026">2026</ion-select-option>
-          <ion-select-option [value]="2027">2027</ion-select-option>
-        </ion-select>
-      </ion-item>
+      <div class="control-group">
+        <label>Year</label>
+        <select [(ngModel)]="year" (change)="onControlsChanged()">
+          <option *ngFor="let y of [2024, 2025, 2026, 2027]" [value]="y">{{ y }}</option>
+        </select>
+      </div>
     </div>
 
-    <ion-note color="danger" *ngIf="errorMsg" class="dr__error">
-      {{ errorMsg }}
-    </ion-note>
-
-    <div *ngIf="loading" class="dr__loading">
-      <ion-spinner></ion-spinner>
+    <div *ngIf="loading" class="dr-status">
+      <ion-spinner name="crescent"></ion-spinner>
     </div>
 
-    <div *ngIf="!loading && !errorMsg" class="dr__tableWrap">
-      <table class="dr__table">
+    <div *ngIf="!loading && !errorMsg" class="table-container">
+      <table class="pivot-table">
         <thead>
           <tr>
-            <th class="sticky-col">
-              {{ rowDim === 'courses' ? 'Course' : 'Activity' }}
-            </th>
-
-            <th *ngFor="let c of colLabels; trackBy: trackByIdx">{{ c }}</th>
-
-            <th class="total-col">Total</th>
+            <th class="sticky-col header-cell">{{ rowDim === 'courses' ? 'Course' : 'Activity' }}</th>
+            <th *ngFor="let c of colLabels">{{ c }}</th>
+            <th class="total-col header-cell">Total</th>
           </tr>
         </thead>
-
         <tbody>
           <tr *ngFor="let r of rows; trackBy: trackByRowId">
-            <td class="sticky-col">{{ r.label }}</td>
-
-            <td *ngFor="let v of r.values; trackBy: trackByIdx">
+            <td class="sticky-col row-label">{{ r.label }}</td>
+            <td *ngFor="let v of r.values" class="val-cell" [class.is-zero]="v === 0">
               {{ formatCell(v) }}
             </td>
-
-            <td class="total-col">{{ formatCell(r.total) }}</td>
-          </tr>
-
-          <tr *ngIf="rows.length > 0" class="totals-row">
-            <td class="sticky-col">Total</td>
-
-            <td *ngFor="let t of colTotals; trackBy: trackByIdx">
-              {{ formatCell(t) }}
-            </td>
-
-            <td class="total-col">{{ formatCell(grandTotal) }}</td>
+            <td class="total-col val-cell highlight">{{ formatCell(r.total) }}</td>
           </tr>
         </tbody>
+        <tfoot>
+          <tr class="footer-row">
+            <td class="sticky-col">Grand Total</td>
+            <td *ngFor="let t of colTotals" class="val-cell">{{ formatCell(t) }}</td>
+            <td class="total-col val-cell">{{ formatCell(grandTotal) }}</td>
+          </tr>
+        </tfoot>
       </table>
 
-      <ion-note *ngIf="rows.length === 0" class="dr__empty">
-        No data for selected filters.
-      </ion-note>
+      <div *ngIf="rows.length === 0" class="empty-state">
+        <ion-icon name="analytics-outline"></ion-icon>
+        <p>No data found for {{ year }}</p>
+      </div>
     </div>
+
   </div>
 </ion-content>
